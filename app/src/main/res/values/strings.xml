@@ -1,0 +1,6 @@
+<resources>
+    <string name="app_name">Wave Control</string>
+    <string name="accessibility_service_description">Layanan ini memungkinkan aplikasi Wave Control untuk melakukan aksi navigasi sistem (Kembali, Beranda, Notifikasi, Kunci Layar) dan mengusap/menggulir layar (TikTok, Reels, browser) secara hands-free menggunakan gerakan tangan tanpa menyentuh layar.</string>
+    <string name="notification_channel_name">Layanan Wave Control</string>
+    <string name="notification_channel_desc">Notifikasi untuk menjaga deteksi gerakan tangan berjalan di latar belakang.</string>
+</resources>
