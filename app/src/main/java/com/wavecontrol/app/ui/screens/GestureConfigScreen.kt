@@ -34,6 +34,8 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -43,6 +45,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -61,6 +64,7 @@ import com.wavecontrol.app.theme.*
 fun GestureConfigScreen(
     settings: WaveSettings,
     onUpdateGestureAction: (GestureType, WaveAction) -> Unit,
+    onToggleGestureEnabled: (GestureType, Boolean) -> Unit,
     onTestAction: (WaveAction) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -130,6 +134,15 @@ fun GestureConfigScreen(
                 }
 
                 // 3 Stats Grid
+                val activeNodesCount = listOf(
+                    settings.isWaveLeftEnabled,
+                    settings.isWaveRightEnabled,
+                    settings.isWaveUpEnabled,
+                    settings.isWaveDownEnabled,
+                    settings.isHandHoverEnabled,
+                    settings.isProximityActionEnabled
+                ).count { it }
+
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -155,7 +168,7 @@ fun GestureConfigScreen(
                                 modifier = Modifier.padding(vertical = 2.dp)
                             ) {
                                 Text(
-                                    text = "6",
+                                    text = "$activeNodesCount",
                                     fontSize = 20.sp,
                                     fontWeight = FontWeight.Bold,
                                     color = LuminousCyan
@@ -302,13 +315,15 @@ fun GestureConfigScreen(
             )
         }
 
-        // Gesture Node Cards
+        // 4 Configured Gesture Node Cards + 2 Auxiliary Nodes (with Independent On/Off Toggles)
         GestureNodeCard(
             code = "W-L",
             title = "Wave Left",
             domain = "Media Control",
             icon = Icons.Default.SkipPrevious,
             currentAction = settings.actionWaveLeft,
+            isEnabled = settings.isWaveLeftEnabled,
+            onToggleEnabled = { onToggleGestureEnabled(GestureType.WAVE_LEFT, it) },
             onRemapClick = { editingGesture = GestureType.WAVE_LEFT },
             onTest = { onTestAction(settings.actionWaveLeft) }
         )
@@ -319,6 +334,8 @@ fun GestureConfigScreen(
             domain = "Media Control",
             icon = Icons.Default.SkipNext,
             currentAction = settings.actionWaveRight,
+            isEnabled = settings.isWaveRightEnabled,
+            onToggleEnabled = { onToggleGestureEnabled(GestureType.WAVE_RIGHT, it) },
             onRemapClick = { editingGesture = GestureType.WAVE_RIGHT },
             onTest = { onTestAction(settings.actionWaveRight) }
         )
@@ -329,6 +346,8 @@ fun GestureConfigScreen(
             domain = "System Audio",
             icon = Icons.Default.VolumeUp,
             currentAction = settings.actionWaveUp,
+            isEnabled = settings.isWaveUpEnabled,
+            onToggleEnabled = { onToggleGestureEnabled(GestureType.WAVE_UP, it) },
             onRemapClick = { editingGesture = GestureType.WAVE_UP },
             onTest = { onTestAction(settings.actionWaveUp) }
         )
@@ -339,6 +358,8 @@ fun GestureConfigScreen(
             domain = "System Audio",
             icon = Icons.Default.VolumeDown,
             currentAction = settings.actionWaveDown,
+            isEnabled = settings.isWaveDownEnabled,
+            onToggleEnabled = { onToggleGestureEnabled(GestureType.WAVE_DOWN, it) },
             onRemapClick = { editingGesture = GestureType.WAVE_DOWN },
             onTest = { onTestAction(settings.actionWaveDown) }
         )
@@ -349,6 +370,8 @@ fun GestureConfigScreen(
             domain = "Media Control",
             icon = Icons.Default.FrontHand,
             currentAction = settings.actionHandHover,
+            isEnabled = settings.isHandHoverEnabled,
+            onToggleEnabled = { onToggleGestureEnabled(GestureType.HAND_HOVER, it) },
             onRemapClick = { editingGesture = GestureType.HAND_HOVER },
             onTest = { onTestAction(settings.actionHandHover) }
         )
@@ -359,6 +382,8 @@ fun GestureConfigScreen(
             domain = "Optical Sensor",
             icon = Icons.Default.Sensors,
             currentAction = settings.actionProximity,
+            isEnabled = settings.isProximityActionEnabled,
+            onToggleEnabled = { onToggleGestureEnabled(GestureType.PROXIMITY_WAVE, it) },
             onRemapClick = { editingGesture = GestureType.PROXIMITY_WAVE },
             onTest = { onTestAction(settings.actionProximity) }
         )
@@ -473,20 +498,31 @@ private fun GestureNodeCard(
     domain: String,
     icon: ImageVector,
     currentAction: WaveAction,
+    isEnabled: Boolean,
+    onToggleEnabled: (Boolean) -> Unit,
     onRemapClick: () -> Unit,
     onTest: () -> Unit
 ) {
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .alpha(if (isEnabled) 1.0f else 0.58f),
         shape = RoundedCornerShape(14.dp),
         colors = CardDefaults.cardColors(containerColor = KineticSurface),
-        border = CardDefaults.outlinedCardBorder().copy(brush = Brush.horizontalGradient(listOf(HairlineBorder.copy(alpha = 0.35f), Color.Transparent)))
+        border = CardDefaults.outlinedCardBorder().copy(
+            brush = Brush.horizontalGradient(
+                listOf(
+                    if (isEnabled) CyberTeal.copy(alpha = 0.35f) else HairlineBorder.copy(alpha = 0.2f),
+                    Color.Transparent
+                )
+            )
+        )
     ) {
         Column(
             modifier = Modifier.padding(14.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            // Header: Icon + Title + Status
+            // Header: Icon + Title + Switch Toggle
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -506,7 +542,7 @@ private fun GestureNodeCard(
                         Icon(
                             imageVector = icon,
                             contentDescription = null,
-                            tint = LuminousCyan,
+                            tint = if (isEnabled) LuminousCyan else Color.Gray,
                             modifier = Modifier.size(24.dp)
                         )
                         Box(
@@ -520,7 +556,7 @@ private fun GestureNodeCard(
                                 text = code,
                                 fontFamily = FontFamily.Monospace,
                                 fontSize = 8.sp,
-                                color = LuminousCyan
+                                color = if (isEnabled) LuminousCyan else Color.Gray
                             )
                         }
                     }
@@ -536,18 +572,34 @@ private fun GestureNodeCard(
                             text = "Domain: $domain",
                             fontFamily = FontFamily.Monospace,
                             fontSize = 11.sp,
-                            color = CyberTeal
+                            color = if (isEnabled) CyberTeal else Color.Gray
                         )
                     }
                 }
 
-                // Active dot
-                Box(
-                    modifier = Modifier
-                        .size(8.dp)
-                        .clip(CircleShape)
-                        .background(OperationalEmerald)
-                )
+                // Interactive Toggle Switch
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Text(
+                        text = if (isEnabled) "ACTIVE" else "OFF",
+                        fontFamily = FontFamily.Monospace,
+                        fontSize = 10.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = if (isEnabled) OperationalEmerald else Color.Gray
+                    )
+                    Switch(
+                        checked = isEnabled,
+                        onCheckedChange = onToggleEnabled,
+                        colors = SwitchDefaults.colors(
+                            checkedThumbColor = Color.White,
+                            checkedTrackColor = CyberTeal,
+                            uncheckedThumbColor = Color.LightGray,
+                            uncheckedTrackColor = KineticSurfaceHighest
+                        )
+                    )
+                }
             }
 
             // Bound Action Selector Pill
@@ -568,10 +620,10 @@ private fun GestureNodeCard(
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                     Text(
-                        text = currentAction.title,
+                        text = if (isEnabled) currentAction.title else "${currentAction.title} (Disabled)",
                         fontSize = 14.sp,
                         fontWeight = FontWeight.SemiBold,
-                        color = MaterialTheme.colorScheme.onSurface
+                        color = if (isEnabled) MaterialTheme.colorScheme.onSurface else Color.Gray
                     )
                 }
 
@@ -581,7 +633,7 @@ private fun GestureNodeCard(
                         modifier = Modifier
                             .clip(RoundedCornerShape(6.dp))
                             .background(KineticSurfaceHigh)
-                            .clickable { onTest() }
+                            .clickable(enabled = isEnabled) { onTest() }
                             .padding(horizontal = 10.dp, vertical = 6.dp),
                         contentAlignment = Alignment.Center
                     ) {
@@ -590,7 +642,7 @@ private fun GestureNodeCard(
                             fontFamily = FontFamily.Monospace,
                             fontSize = 10.sp,
                             fontWeight = FontWeight.Bold,
-                            color = CyberTeal
+                            color = if (isEnabled) CyberTeal else Color.Gray
                         )
                     }
 

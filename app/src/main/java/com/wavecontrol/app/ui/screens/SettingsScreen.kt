@@ -130,7 +130,7 @@ fun SettingsScreen(
                         .padding(horizontal = 8.dp, vertical = 3.dp)
                 ) {
                     Text(
-                        text = "v1.3",
+                        text = "v1.4",
                         fontFamily = FontFamily.Monospace,
                         fontSize = 10.sp,
                         fontWeight = FontWeight.Bold,
@@ -476,10 +476,18 @@ fun SettingsScreen(
                 )
 
                 Text(
-                    text = "Version 1.3 (Build 4) • Android 15 Ready",
+                    text = "Version 1.4 (Build 5) • Android 15 Ready",
                     fontFamily = FontFamily.Monospace,
                     fontSize = 11.sp,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+
+                Text(
+                    text = "©2026 ARMIC ZeroGTRS",
+                    fontFamily = FontFamily.Monospace,
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = LuminousCyan
                 )
             }
         }

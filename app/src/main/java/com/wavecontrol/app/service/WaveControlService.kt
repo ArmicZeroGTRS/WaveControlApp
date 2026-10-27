@@ -1,6 +1,7 @@
 package com.wavecontrol.app.service
 
 import android.Manifest
+import android.app.KeyguardManager
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -31,6 +32,7 @@ import com.wavecontrol.app.R
 import com.wavecontrol.app.detector.CameraWaveDetector
 import com.wavecontrol.app.detector.DetectionEvent
 import com.wavecontrol.app.detector.ProximityWaveDetector
+import com.wavecontrol.app.model.WaveAction
 import com.wavecontrol.app.model.WaveSettings
 import com.wavecontrol.app.model.WaveSettingsRepository
 import kotlinx.coroutines.CoroutineScope
@@ -63,20 +65,37 @@ class WaveControlService : Service(), LifecycleOwner {
     private var currentSettings: WaveSettings = WaveSettings()
     private var isDetectionPaused = false
 
-    // Screen State Receiver to pause camera and sensor when screen turns off to save battery
+    // Screen State Receiver to pause camera and sensors when screen is off, sleeping, or locked
     private val screenStateReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             when (intent?.action) {
-                Intent.ACTION_SCREEN_OFF -> {
-                    if (currentSettings.pauseOnScreenOff) {
-                        pauseDetection("Screen Off (Battery Saver)")
+                Intent.ACTION_SCREEN_OFF, Intent.ACTION_DREAMING_STARTED -> {
+                    pauseDetection("Screen Off / Sleep Mode")
+                }
+                Intent.ACTION_SCREEN_ON -> {
+                    if (isDeviceActive()) {
+                        resumeDetection()
+                    } else {
+                        pauseDetection("Device Locked")
                     }
                 }
-                Intent.ACTION_SCREEN_ON, Intent.ACTION_USER_PRESENT -> {
-                    resumeDetection()
+                Intent.ACTION_USER_PRESENT, Intent.ACTION_DREAMING_STOPPED -> {
+                    if (isDeviceActive()) {
+                        resumeDetection()
+                    }
                 }
             }
         }
+    }
+
+    private fun isDeviceActive(): Boolean {
+        val powerManager = getSystemService(Context.POWER_SERVICE) as? PowerManager
+        val keyguardManager = getSystemService(Context.KEYGUARD_SERVICE) as? KeyguardManager
+
+        val isInteractive = powerManager?.isInteractive ?: false
+        val isLocked = keyguardManager?.isKeyguardLocked ?: false
+
+        return isInteractive && !isLocked
     }
 
     override fun onCreate() {
@@ -93,11 +112,13 @@ class WaveControlService : Service(), LifecycleOwner {
 
         createNotificationChannel()
 
-        // Register screen state receiver
+        // Register screen state receiver for screen off, lockscreen, and dreaming/sleep events
         val screenFilter = IntentFilter().apply {
             addAction(Intent.ACTION_SCREEN_OFF)
             addAction(Intent.ACTION_SCREEN_ON)
             addAction(Intent.ACTION_USER_PRESENT)
+            addAction(Intent.ACTION_DREAMING_STARTED)
+            addAction(Intent.ACTION_DREAMING_STOPPED)
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             registerReceiver(screenStateReceiver, screenFilter, RECEIVER_NOT_EXPORTED)
@@ -120,7 +141,7 @@ class WaveControlService : Service(), LifecycleOwner {
                 proximityDetector?.updateCooldown(settings.cooldownMs)
 
                 if (prev.isProximityWaveEnabled != settings.isProximityWaveEnabled) {
-                    if (settings.isProximityWaveEnabled && !isDetectionPaused) {
+                    if (settings.isProximityWaveEnabled && !isDetectionPaused && isDeviceActive()) {
                         proximityDetector?.start()
                     } else {
                         proximityDetector?.stop()
@@ -128,7 +149,7 @@ class WaveControlService : Service(), LifecycleOwner {
                 }
 
                 if (prev.isCameraWaveEnabled != settings.isCameraWaveEnabled) {
-                    if (settings.isCameraWaveEnabled && !isDetectionPaused) {
+                    if (settings.isCameraWaveEnabled && !isDetectionPaused && isDeviceActive()) {
                         bindCameraUseCases()
                     } else {
                         cameraProvider?.unbindAll()
@@ -146,13 +167,11 @@ class WaveControlService : Service(), LifecycleOwner {
         lifecycleRegistry.currentState = Lifecycle.State.STARTED
         lifecycleRegistry.currentState = Lifecycle.State.RESUMED
 
-        // Check initial screen state
-        val powerManager = getSystemService(Context.POWER_SERVICE) as? PowerManager
-        val isScreenOn = powerManager?.isInteractive ?: true
-
         setupDetectors()
-        if (!isScreenOn && currentSettings.pauseOnScreenOff) {
-            pauseDetection("Screen Off (Battery Saver)")
+
+        // If screen is turned off or locked at launch time, pause immediately
+        if (!isDeviceActive()) {
+            pauseDetection("Screen Off / Locked")
         }
     }
 
@@ -165,7 +184,7 @@ class WaveControlService : Service(), LifecycleOwner {
                 handleGesture(event)
             }
         )
-        if (currentSettings.isProximityWaveEnabled && !isDetectionPaused) {
+        if (currentSettings.isProximityWaveEnabled && !isDetectionPaused && isDeviceActive()) {
             proximityDetector?.start()
         }
 
@@ -180,7 +199,7 @@ class WaveControlService : Service(), LifecycleOwner {
         cameraProviderFuture.addListener({
             try {
                 cameraProvider = cameraProviderFuture.get()
-                if (!isDetectionPaused && currentSettings.isCameraWaveEnabled) {
+                if (!isDetectionPaused && currentSettings.isCameraWaveEnabled && isDeviceActive()) {
                     bindCameraUseCases()
                 }
             } catch (e: Exception) {
@@ -264,7 +283,12 @@ class WaveControlService : Service(), LifecycleOwner {
     }
 
     private fun resumeDetection() {
-        if (!isDetectionPaused || !currentSettings.isEnabled) return
+        if (!currentSettings.isEnabled) return
+        if (!isDeviceActive()) {
+            Log.d("WaveControlService", "Device is locked or non-interactive, skipping resume.")
+            return
+        }
+        if (!isDetectionPaused) return
         isDetectionPaused = false
         try {
             if (currentSettings.isCameraWaveEnabled) {
@@ -280,10 +304,11 @@ class WaveControlService : Service(), LifecycleOwner {
     }
 
     private fun handleGesture(event: DetectionEvent) {
-        if (!currentSettings.isEnabled || isDetectionPaused) return
+        if (!currentSettings.isEnabled || isDetectionPaused || !isDeviceActive()) return
 
         try {
             val action = currentSettings.getActionForGesture(event.gesture)
+            if (action == WaveAction.NONE) return
 
             // Execute action
             actionExecutor.execute(action, currentSettings)
@@ -391,7 +416,7 @@ class WaveControlService : Service(), LifecycleOwner {
             ACTION_REBIND_CAMERA -> {
                 if (cameraProvider == null) {
                     setupCameraDetection()
-                } else if (!isDetectionPaused && currentSettings.isCameraWaveEnabled) {
+                } else if (!isDetectionPaused && currentSettings.isCameraWaveEnabled && isDeviceActive()) {
                     bindCameraUseCases()
                 }
             }
@@ -446,7 +471,7 @@ class WaveControlService : Service(), LifecycleOwner {
                 instance?.let { service ->
                     if (service.cameraProvider == null) {
                         service.setupCameraDetection()
-                    } else if (!service.isDetectionPaused && service.currentSettings.isCameraWaveEnabled) {
+                    } else if (!service.isDetectionPaused && service.currentSettings.isCameraWaveEnabled && service.isDeviceActive()) {
                         service.bindCameraUseCases()
                     }
                 } ?: run {

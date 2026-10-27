@@ -10,25 +10,27 @@
 Touch-free spatial hand gesture control (*WaveControl*) application for Android using the front camera and proximity sensor. Completely rebuilt with the **Stitch AI Kinetic Telemetry Spatial UI** design system and the official **Gemini 4 Argon Brand Identity**.
 
 > [!IMPORTANT]
-> **Version 1.3**:
-> 1. **Gemini 4 Argon Brand Identity Integration**: Official glowing wave mark, dark wordmark header, and adaptive Android launcher icons.
-> 2. **Stitch AI Kinetic Telemetry Spatial UI**: 4 newly architected screens — **Radar Dashboard**, **Gesture Control Center**, **Floating HUD Studio**, and **System Settings & Hardware Profiles**.
-> 3. **Gesture Detection Engine Bug Fix**: Fixed the issue where gestures were not detected or responsive. Resolved frame energy dilution by isolating active motion cells, expanded natural hand swipe duration to 75–650ms, and added dynamic CameraX permission rebinding.
-> 4. **100% Mobile Banking Safe**: Zero Accessibility Services used. Fully compliant with Android 15 Restricted Settings without triggering safety warnings.
+> **Version 1.4**:
+> 1. **Hand-Only Gesture Recognition**: Integrated 2D bounding-box spatial clustering (`10..185` cell envelope, span $\ge 3\times 3$, minimum energy density, monotonic multi-frame trajectory validation, and whole-frame camera pan rejection) to prevent non-hand objects, shadows, cables, or phone tilts from falsely triggering gestures.
+> 2. **Per-Node Gesture Enablement Toggles**: Added interactive on/off toggles to all 4 configured gesture nodes (`Wave Left`, `Wave Right`, `Wave Up`, `Wave Down`) as well as Hand Hover and Proximity Wave in the Gesture Control Center.
+> 3. **Video Next Track & Previous Track Gestures**: Re-engineered media key dispatch using valid monotonic `uptimeMillis()` and dual dispatch (direct `AudioManager` + foreground `ACTION_MEDIA_BUTTON` broadcast), ensuring full compatibility with YouTube, VLC, and video players.
+> 4. **Strict Sleep & Lockscreen Guard**: Enhanced lifecycle integration with `KeyguardManager` and broadcast receivers for `ACTION_SCREEN_OFF`, `ACTION_SCREEN_ON`, `ACTION_USER_PRESENT`, `ACTION_DREAMING_STARTED`, and `ACTION_DREAMING_STOPPED` to guarantee zero camera or sensor activity while the screen is off, sleeping, or locked.
+> 5. **Brand & About Engine Update**: Added `©2026 ARMIC ZeroGTRS` in the Settings screen under About this App.
+> 6. **100% Mobile Banking Safe**: Zero Accessibility Services used. Fully compliant with Android 15 Restricted Settings without triggering safety warnings.
 
 ---
 
 ## 📥 Ready-to-Install APK Download
 
 Download the latest pre-built APK directly without building:
-👉 **[Download WaveControl-v1.3.apk](https://github.com/ArmicZeroGTRS/WaveControlApp/releases/download/v1.3/WaveControl-v1.3.apk)** *(Version 1.3, Build 4)*
+👉 **[Download WaveControl-v1.4.apk](https://github.com/ArmicZeroGTRS/WaveControlApp/releases/download/v1.4/WaveControl-v1.4.apk)** *(Version 1.4, Build 5)*
 
 ---
 
 ## 📋 Technical Specifications
 | Component | Specification |
 |---|---|
-| **Version** | v1.3 (versionCode 4) |
+| **Version** | v1.4 (versionCode 5) |
 | **Minimum SDK** | API 31 (Android 12 Snow Cone) |
 | **Target SDK** | API 35 (Android 15 Vanilla Ice Cream) |
 | **Compile SDK** | API 36 |
@@ -48,34 +50,25 @@ Download the latest pre-built APK directly without building:
 * **Hardware Status Ribbon:** Live `ENGINE ACTIVE` heartbeat, `60 FPS` optical clock, and `BANK SAFE` verified indicator.
 * **Camera Lock & Latency Readout:** Sub-14ms telemetry latency indicator with real-time vector coordinate monitoring.
 * **Master Engine Command Pill:** Ergonomic full-width start/pause capsule button with tactile pulse feedback.
-* **Active Telemetry Bus:** Live stream of last recognized gesture, target application, and sensor fusion health.
 
 ### 2. 🎛️ Gesture Control Center (`GestureConfigScreen.kt`)
-* **Kinetic Radar Engine Telemetry Strip:** Active Mesh counter (`6 / 6 Bound Vectors`), zero-interference conflict indicator, and dynamic optical profile.
-* **Domain Quick Action Filters:** Category filtering for `All Domains`, `Media Control`, `System Audio`, `Scrolling`, and `Navigation`.
-* **Configured Gesture Nodes:**
-  * **👈 Wave Left (W-L):** Previous Track / Rewind.
-  * **👉 Wave Right (W-R):** Next Track / Fast-forward.
-  * **👆 Wave Up (W-U):** Volume Up.
-  * **👇 Wave Down (W-D):** Volume Down.
-  * **✋ Hand Hover / Hold (H-H):** Play / Pause Toggle.
-  * **📱 Proximity Wave (P-W):** Ultra-fast proximity swipe (< 5cm).
-* **Live Action Remapping & Test Runner:** Interactive modal to reassign actions and test execution instantly.
+* **Configured Gesture Nodes with Independent Toggles:** Dedicated cards for `Wave Left`, `Wave Right`, `Wave Up`, `Wave Down`, `Hand Hover`, and `Proximity Wave` with working on/off switches.
+* **Dynamic Quick Filters:** Filter gesture assignments by domain (`Media Control`, `System Audio`, `Scrolling`, `Navigation`).
+* **Action Remapping Bottom Sheet:** Reassign any gesture to Media Play/Pause, Next Track/Video, Previous Track/Video, Volume Up/Down/Mute, or Flashlight with instant visual confirmation.
 
-### 3. 🖥️ Floating HUD Studio & Diagnostics (`FloatingHudScreen.kt`)
-* **HUD Simulator Viewport:** 16:9 simulated display previewing the glowing HUD capsule over active applications.
-* **Visual Topology Anchor Selector:** Switch between `Center Island`, `Top-Right`, and `Dynamic Edge`.
-* **Real-Time Trigger Simulation:** One-tap test button to inspect HUD capsule animations and dismissal latency.
-* **Overlay Privilege Banner:** Real-time check and deep link for system overlay capabilities.
+### 3. 🪟 Floating HUD Studio (`FloatingHudScreen.kt`)
+* **Real-Time Floating Overlay Preview:** Interactive sandbox demonstrating how the HUD island appears over other apps.
+* **Anchor Positioning:** Switch between `CENTER_ISLAND`, `TOP_RIGHT`, and `DYNAMIC_EDGE`.
+* **Telemetry Diagnostics:** Live coordinate and sensor energy feeds.
 
 ### 4. ⚙️ System Settings & Hardware Profiles (`SettingsScreen.kt`)
 * **Appearance & Theme Selector:** Pure obsidian `Dark` mode (OLED optimized), `Light` mode, or `Auto` (System) — persisted live across sessions.
 * **Spatial Haptic Pulse:** Configurable actuator resonance percentage for mid-air vector crossing confirmations.
 * **Reduced Kinematics:** Performance toggle to suppress decorative animations on lower-end devices.
 * **Axis Swap Calibration:** Resolves inverted or landscape sensor mountings on various hardware manufacturers.
-* **Screen-Off Battery Saver:** Automatically pauses camera and proximity sensors when the device is locked.
+* **Screen-Off & Lockscreen Guard:** Automatically pauses camera and proximity sensors when the device is locked or asleep.
 * **Sandboxed Security Vault:** Detailed safety audit confirming 0% risk for banking apps.
-* **About WaveControl:** Gemini 4 Argon brand showcase and developer credentials.
+* **About WaveControl:** Gemini 4 Argon brand showcase and developer credentials (`©2026 ARMIC ZeroGTRS`).
 
 ---
 
@@ -88,7 +81,7 @@ Download the latest pre-built APK directly without building:
 ---
 
 ## 🚀 Installation
-1. Download [`WaveControl-v1.3.apk`](https://github.com/ArmicZeroGTRS/WaveControlApp/releases/download/v1.3/WaveControl-v1.3.apk).
+1. Download [`WaveControl-v1.4.apk`](https://github.com/ArmicZeroGTRS/WaveControlApp/releases/download/v1.4/WaveControl-v1.4.apk).
 2. Open the APK on your Android device and confirm installation.
 3. Launch **WaveControl**, grant standard Camera permission, and toggle the master switch to begin touchless gesture control!
 
@@ -96,3 +89,4 @@ Download the latest pre-built APK directly without building:
 
 ## 📄 License
 This project is licensed under the [MIT License](LICENSE).
+©2026 ARMIC ZeroGTRS

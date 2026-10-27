@@ -298,6 +298,19 @@ fun MainApp() {
                                 }
                             }
                         },
+                        onToggleGestureEnabled = { gesture, enabled ->
+                            repository.updateSettings { s ->
+                                when (gesture) {
+                                    GestureType.WAVE_LEFT -> s.copy(isWaveLeftEnabled = enabled)
+                                    GestureType.WAVE_RIGHT -> s.copy(isWaveRightEnabled = enabled)
+                                    GestureType.WAVE_UP -> s.copy(isWaveUpEnabled = enabled)
+                                    GestureType.WAVE_DOWN -> s.copy(isWaveDownEnabled = enabled)
+                                    GestureType.HAND_HOVER -> s.copy(isHandHoverEnabled = enabled)
+                                    GestureType.PROXIMITY_WAVE -> s.copy(isProximityActionEnabled = enabled)
+                                    GestureType.NONE -> s
+                                }
+                            }
+                        },
                         onTestAction = { action ->
                             actionExecutor.execute(action, settings)
                         }

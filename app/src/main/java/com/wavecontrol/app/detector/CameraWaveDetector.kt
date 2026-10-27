@@ -26,7 +26,9 @@ class CameraWaveDetector(
         val screenY: Float,
         val time: Long,
         val energy: Float,
-        val activeCells: Int
+        val activeCells: Int,
+        val spanX: Int,
+        val spanY: Int
     )
 
     private val motionHistory = mutableListOf<MotionFrame>()
@@ -100,12 +102,17 @@ class CameraWaveDetector(
             val globalShift = (sumCurrent - sumPrev) / totalCells
 
             // Dynamic noise cutoff based on sensitivity
-            val noiseCutoff = 10f - (sensitivity * 5.0f) // ~5.0 to 9.5
+            val noiseCutoff = 10f - (sensitivity * 4.5f) // ~5.5 to 9.5
 
             var totalMotionDiff = 0f
             var activeCells = 0
             var weightedScreenX = 0f
             var weightedScreenY = 0f
+
+            var minGx = gridSize
+            var maxGx = -1
+            var minGy = gridSize
+            var maxGy = -1
 
             for (gy in 0 until gridSize) {
                 for (gx in 0 until gridSize) {
@@ -114,13 +121,18 @@ class CameraWaveDetector(
                     val compensatedDiff = abs((rawLum - globalShift) - prevGrid[cellIdx])
 
                     if (compensatedDiff > noiseCutoff) {
+                        // Track bounding box of motion cluster
+                        if (gx < minGx) minGx = gx
+                        if (gx > maxGx) maxGx = gx
+                        if (gy < minGy) minGy = gy
+                        if (gy > maxGy) maxGy = gy
+
                         // Normalized sensor coordinates (0.0 to 1.0)
                         val u = gx.toFloat() / (gridSize - 1f)
                         val v = gy.toFloat() / (gridSize - 1f)
 
                         // Map sensor coordinates into portrait screen coordinates:
                         // Front camera sensors on mobile devices are mounted in landscape.
-                        // Matching rotation ensures X = phone horizontal, Y = phone vertical.
                         val (normX, normY) = when (rotationDegrees) {
                             90 -> Pair(1f - v, u)
                             180 -> Pair(1f - u, 1f - v)
@@ -153,15 +165,29 @@ class CameraWaveDetector(
             // Update baseline
             System.arraycopy(currentGrid, 0, prevGrid, 0, totalCells)
 
-            val minActiveCells = (6 - (sensitivity * 3f)).toInt().coerceAtLeast(3)
-            val minDiff = 35f - (sensitivity * 15f)
-
             val frameEnergy = if (activeCells > 0) {
                 ((totalMotionDiff / (activeCells * 40f)) * 10f).coerceIn(0f, 100f)
             } else 0f
 
-            // Record motion frame if above threshold
-            if (activeCells >= minActiveCells && totalMotionDiff > minDiff) {
+            // Hand cluster dimensions
+            val spanX = if (maxGx >= minGx) maxGx - minGx + 1 else 0
+            val spanY = if (maxGy >= minGy) maxGy - minGy + 1 else 0
+            val avgDiffPerCell = if (activeCells > 0) totalMotionDiff / activeCells else 0f
+
+            // --- Robust Hand Heuristics ---
+            // 1. Hand size envelope: at 15-40cm, hand occupies ~10 to 180 cells (2.5% to 45% of screen).
+            //    Reject < 10 (cords, specks, ambient noise) and > 185 (phone shake, whole-room lighting).
+            // 2. Spatial 2D span: palm + fingers form a 2D blob with spanX >= 3 and spanY >= 3.
+            //    Reject 1D thin objects (pens, wires, edges).
+            // 3. Motion energy density: avgDiffPerCell >= 11f.
+            // 4. Reject whole-frame camera motion (touching all 4 borders simultaneously with high count).
+            val isWholeScenePan = activeCells > 120 && minGx == 0 && maxGx == gridSize - 1 && minGy == 0 && maxGy == gridSize - 1
+            val isValidHandCandidate = activeCells in 10..185 &&
+                    spanX >= 3 && spanY >= 3 &&
+                    avgDiffPerCell >= 11.0f &&
+                    !isWholeScenePan
+
+            if (isValidHandCandidate) {
                 val cx = (weightedScreenX / totalMotionDiff).coerceIn(0f, 1f)
                 val cy = (weightedScreenY / totalMotionDiff).coerceIn(0f, 1f)
 
@@ -171,15 +197,17 @@ class CameraWaveDetector(
                         screenY = cy,
                         time = now,
                         energy = frameEnergy,
-                        activeCells = activeCells
+                        activeCells = activeCells,
+                        spanX = spanX,
+                        spanY = spanY
                     )
                 )
             }
 
-            // Keep sliding window of 650ms for natural hand wave gestures
-            motionHistory.removeAll { now - it.time > 650L }
+            // Sliding window of 600ms for natural hand wave gestures
+            motionHistory.removeAll { now - it.time > 600L }
 
-            // Live vector calculation for real-time telemetry preview UI
+            // Live vector calculation for telemetry preview
             var liveDx = 0f
             var liveDy = 0f
             if (motionHistory.size >= 2) {
@@ -195,44 +223,66 @@ class CameraWaveDetector(
                 return
             }
 
-            // Evaluate Wave Gestures
-            if (motionHistory.size >= 2) {
+            // --- Evaluate Wave Gestures ---
+            // Require at least 3 consecutive valid hand frames to eliminate 1-frame glitches
+            if (motionHistory.size >= 3) {
                 val oldest = motionHistory.first()
                 val newest = motionHistory.last()
                 val duration = newest.time - oldest.time
 
-                if (duration in 75L..650L) {
+                if (duration in 90L..550L) {
                     val dx = newest.screenX - oldest.screenX
                     val dy = newest.screenY - oldest.screenY
 
                     val absDx = abs(dx)
                     val absDy = abs(dy)
 
-                    // Movement threshold based on sensitivity
-                    val moveThreshold = 0.22f - (sensitivity * 0.10f) // ~0.12 to 0.20
+                    // Movement threshold scaled by sensitivity
+                    val moveThreshold = 0.22f - (sensitivity * 0.08f) // ~0.14 to 0.21
 
                     var detectedGesture = GestureType.NONE
 
                     // Check Horizontal Dominance (Wave Left / Right)
-                    if (absDx > moveThreshold && absDx > absDy * 1.15f) {
-                        detectedGesture = if (dx > 0) {
-                            GestureType.WAVE_RIGHT
+                    if (absDx > moveThreshold && absDx > absDy * 1.25f) {
+                        // Validate trajectory consistency: intermediate frames should progress monotonically
+                        val midIndex = motionHistory.size / 2
+                        val midX = motionHistory[midIndex].screenX
+                        val progressesCorrectly = if (dx > 0) {
+                            midX >= oldest.screenX - 0.05f && newest.screenX >= midX - 0.05f
                         } else {
-                            GestureType.WAVE_LEFT
+                            midX <= oldest.screenX + 0.05f && newest.screenX <= midX + 0.05f
+                        }
+
+                        if (progressesCorrectly) {
+                            detectedGesture = if (dx > 0) {
+                                GestureType.WAVE_RIGHT
+                            } else {
+                                GestureType.WAVE_LEFT
+                            }
                         }
                     }
                     // Check Vertical Dominance (Wave Up / Down)
-                    else if (absDy > moveThreshold && absDy > absDx * 1.15f) {
-                        // In screen coordinates: dy > 0 is downwards, dy < 0 is upwards
-                        detectedGesture = if (dy > 0) {
-                            GestureType.WAVE_DOWN
+                    else if (absDy > moveThreshold && absDy > absDx * 1.25f) {
+                        val midIndex = motionHistory.size / 2
+                        val midY = motionHistory[midIndex].screenY
+                        val progressesCorrectly = if (dy > 0) {
+                            midY >= oldest.screenY - 0.05f && newest.screenY >= midY - 0.05f
                         } else {
-                            GestureType.WAVE_UP
+                            midY <= oldest.screenY + 0.05f && newest.screenY <= midY + 0.05f
+                        }
+
+                        if (progressesCorrectly) {
+                            // In screen coordinates: dy > 0 is downwards, dy < 0 is upwards
+                            detectedGesture = if (dy > 0) {
+                                GestureType.WAVE_DOWN
+                            } else {
+                                GestureType.WAVE_UP
+                            }
                         }
                     }
 
                     if (detectedGesture != GestureType.NONE) {
-                        val confidence = ((absDx.coerceAtLeast(absDy) / moveThreshold) * 0.7f + 0.3f).coerceIn(0f, 1f)
+                        val confidence = ((absDx.coerceAtLeast(absDy) / moveThreshold) * 0.6f + 0.4f).coerceIn(0f, 1f)
                         lastTriggerTime = now
                         motionHistory.clear()
                         hoverStartTime = 0L
@@ -253,19 +303,19 @@ class CameraWaveDetector(
                 }
             }
 
-            // Evaluate Hand Hover / Hold (Hand held in front of camera steadily)
-            if (activeCells >= 15 && totalMotionDiff > 120f) {
+            // --- Evaluate Hand Hover / Hold (Hand held steadily in front of camera) ---
+            if (activeCells in 18..160 && spanX >= 3 && spanY >= 3 && avgDiffPerCell >= 12f) {
                 if (motionHistory.size >= 2) {
                     val oldest = motionHistory.first()
                     val newest = motionHistory.last()
                     val driftX = abs(newest.screenX - oldest.screenX)
                     val driftY = abs(newest.screenY - oldest.screenY)
 
-                    // If drift is low, hand is stationary
-                    if (driftX < 0.16f && driftY < 0.16f) {
+                    // Low drift indicates intentional stationary hand hold
+                    if (driftX < 0.12f && driftY < 0.12f) {
                         if (hoverStartTime == 0L) {
                             hoverStartTime = now
-                        } else if (now - hoverStartTime >= 650L && !isHovering) {
+                        } else if (now - hoverStartTime >= 600L && !isHovering) {
                             isHovering = true
                             lastTriggerTime = now
                             motionHistory.clear()

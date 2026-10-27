@@ -67,9 +67,9 @@ class ProximityWaveDetector(
             isNear = false
             val duration = now - nearStartTime
 
-            // A deliberate quick wave across sensor takes 50ms - 600ms
-            // If held longer (> 700ms), it is an obstruction / pocket, so reject!
-            if (duration in 50L..600L && (now - lastTriggerTime >= cooldownMs)) {
+            // A deliberate quick wave across sensor takes 80ms - 480ms
+            // If held longer (> 500ms), it is an obstruction, phone pickup, or pocket event -> reject!
+            if (duration in 80L..480L && (now - lastTriggerTime >= cooldownMs)) {
                 lastTriggerTime = now
                 onGestureDetected(
                     DetectionEvent(

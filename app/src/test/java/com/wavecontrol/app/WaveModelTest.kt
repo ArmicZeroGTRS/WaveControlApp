@@ -24,6 +24,14 @@ class WaveModelTest {
         assertFalse(settings.invertHorizontal)
         assertFalse(settings.invertVertical)
 
+        // Gesture enablement toggles default to true
+        assertTrue(settings.isWaveLeftEnabled)
+        assertTrue(settings.isWaveRightEnabled)
+        assertTrue(settings.isWaveUpEnabled)
+        assertTrue(settings.isWaveDownEnabled)
+        assertTrue(settings.isHandHoverEnabled)
+        assertTrue(settings.isProximityActionEnabled)
+
         // Stitch Kinetic Spatial Settings defaults
         assertEquals("dark", settings.themeMode)
         assertEquals(0.68f, settings.hapticIntensity, 0.001f)
@@ -45,6 +53,36 @@ class WaveModelTest {
         assertEquals(WaveAction.VOLUME_UP, settings.getActionForGesture(GestureType.WAVE_UP))
         assertEquals(WaveAction.VOLUME_DOWN, settings.getActionForGesture(GestureType.WAVE_DOWN))
         assertEquals(WaveAction.NONE, settings.getActionForGesture(GestureType.NONE))
+    }
+
+    @Test
+    fun getActionForGesture_whenDisabled_returnsNone() {
+        val settings = WaveSettings(
+            actionWaveLeft = WaveAction.MEDIA_PREV,
+            actionWaveRight = WaveAction.MEDIA_NEXT,
+            actionWaveUp = WaveAction.VOLUME_UP,
+            actionWaveDown = WaveAction.VOLUME_DOWN,
+            isWaveLeftEnabled = false,
+            isWaveRightEnabled = true,
+            isWaveUpEnabled = false,
+            isWaveDownEnabled = true
+        )
+
+        // Wave Left is disabled -> returns NONE
+        assertEquals(WaveAction.NONE, settings.getActionForGesture(GestureType.WAVE_LEFT))
+        assertFalse(settings.isGestureEnabled(GestureType.WAVE_LEFT))
+
+        // Wave Right is enabled -> returns MEDIA_NEXT
+        assertEquals(WaveAction.MEDIA_NEXT, settings.getActionForGesture(GestureType.WAVE_RIGHT))
+        assertTrue(settings.isGestureEnabled(GestureType.WAVE_RIGHT))
+
+        // Wave Up is disabled -> returns NONE
+        assertEquals(WaveAction.NONE, settings.getActionForGesture(GestureType.WAVE_UP))
+        assertFalse(settings.isGestureEnabled(GestureType.WAVE_UP))
+
+        // Wave Down is enabled -> returns VOLUME_DOWN
+        assertEquals(WaveAction.VOLUME_DOWN, settings.getActionForGesture(GestureType.WAVE_DOWN))
+        assertTrue(settings.isGestureEnabled(GestureType.WAVE_DOWN))
     }
 
     @Test

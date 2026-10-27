@@ -40,7 +40,13 @@ class WaveSettingsRepository(context: Context) {
             actionWaveUp = getAction(KEY_ACTION_WAVE_UP, WaveAction.VOLUME_UP),
             actionWaveDown = getAction(KEY_ACTION_WAVE_DOWN, WaveAction.VOLUME_DOWN),
             actionHandHover = getAction(KEY_ACTION_HAND_HOVER, WaveAction.MEDIA_PLAY_PAUSE),
-            actionProximity = getAction(KEY_ACTION_PROXIMITY, WaveAction.MEDIA_PLAY_PAUSE)
+            actionProximity = getAction(KEY_ACTION_PROXIMITY, WaveAction.MEDIA_PLAY_PAUSE),
+            isWaveLeftEnabled = prefs.getBoolean(KEY_ENABLE_WAVE_LEFT, true),
+            isWaveRightEnabled = prefs.getBoolean(KEY_ENABLE_WAVE_RIGHT, true),
+            isWaveUpEnabled = prefs.getBoolean(KEY_ENABLE_WAVE_UP, true),
+            isWaveDownEnabled = prefs.getBoolean(KEY_ENABLE_WAVE_DOWN, true),
+            isHandHoverEnabled = prefs.getBoolean(KEY_ENABLE_HAND_HOVER, true),
+            isProximityActionEnabled = prefs.getBoolean(KEY_ENABLE_PROXIMITY_ACTION, true)
         )
     }
 
@@ -75,6 +81,12 @@ class WaveSettingsRepository(context: Context) {
             .putString(KEY_ACTION_WAVE_DOWN, s.actionWaveDown.name)
             .putString(KEY_ACTION_HAND_HOVER, s.actionHandHover.name)
             .putString(KEY_ACTION_PROXIMITY, s.actionProximity.name)
+            .putBoolean(KEY_ENABLE_WAVE_LEFT, s.isWaveLeftEnabled)
+            .putBoolean(KEY_ENABLE_WAVE_RIGHT, s.isWaveRightEnabled)
+            .putBoolean(KEY_ENABLE_WAVE_UP, s.isWaveUpEnabled)
+            .putBoolean(KEY_ENABLE_WAVE_DOWN, s.isWaveDownEnabled)
+            .putBoolean(KEY_ENABLE_HAND_HOVER, s.isHandHoverEnabled)
+            .putBoolean(KEY_ENABLE_PROXIMITY_ACTION, s.isProximityActionEnabled)
             .apply()
     }
 
@@ -112,6 +124,12 @@ class WaveSettingsRepository(context: Context) {
         private const val KEY_ACTION_WAVE_DOWN = "action_wave_down"
         private const val KEY_ACTION_HAND_HOVER = "action_hand_hover"
         private const val KEY_ACTION_PROXIMITY = "action_proximity"
+        private const val KEY_ENABLE_WAVE_LEFT = "enable_wave_left"
+        private const val KEY_ENABLE_WAVE_RIGHT = "enable_wave_right"
+        private const val KEY_ENABLE_WAVE_UP = "enable_wave_up"
+        private const val KEY_ENABLE_WAVE_DOWN = "enable_wave_down"
+        private const val KEY_ENABLE_HAND_HOVER = "enable_hand_hover"
+        private const val KEY_ENABLE_PROXIMITY_ACTION = "enable_proximity_action"
 
         @Volatile
         private var INSTANCE: WaveSettingsRepository? = null

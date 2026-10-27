@@ -1,11 +1,13 @@
 package com.wavecontrol.app.service
 
 import android.content.Context
+import android.content.Intent
 import android.hardware.camera2.CameraCharacteristics
 import android.hardware.camera2.CameraManager
 import android.media.AudioManager
 import android.media.ToneGenerator
 import android.os.Build
+import android.os.SystemClock
 import android.os.VibrationEffect
 import android.os.Vibrator
 import android.os.VibratorManager
@@ -91,10 +93,31 @@ class WaveActionExecutor(private val context: Context) {
     private fun sendMediaKeyEvent(keyCode: Int): Boolean {
         val am = audioManager ?: return false
         return try {
-            val down = KeyEvent(KeyEvent.ACTION_DOWN, keyCode)
-            val up = KeyEvent(KeyEvent.ACTION_UP, keyCode)
+            val eventTime = SystemClock.uptimeMillis()
+            val down = KeyEvent(eventTime, eventTime, KeyEvent.ACTION_DOWN, keyCode, 0)
+            val up = KeyEvent(eventTime, eventTime + 25, KeyEvent.ACTION_UP, keyCode, 0)
+
+            // 1. Primary dispatch via AudioManager (targeted directly at active media session)
             am.dispatchMediaKeyEvent(down)
             am.dispatchMediaKeyEvent(up)
+
+            // 2. Broadcast Intent.ACTION_MEDIA_BUTTON to wake background video players & media receivers
+            try {
+                val downIntent = Intent(Intent.ACTION_MEDIA_BUTTON).apply {
+                    putExtra(Intent.EXTRA_KEY_EVENT, down)
+                    addFlags(Intent.FLAG_RECEIVER_FOREGROUND)
+                }
+                context.sendOrderedBroadcast(downIntent, null)
+
+                val upIntent = Intent(Intent.ACTION_MEDIA_BUTTON).apply {
+                    putExtra(Intent.EXTRA_KEY_EVENT, up)
+                    addFlags(Intent.FLAG_RECEIVER_FOREGROUND)
+                }
+                context.sendOrderedBroadcast(upIntent, null)
+            } catch (be: Exception) {
+                Log.w("WaveActionExecutor", "Broadcast media event fallback failed: ${be.message}")
+            }
+
             true
         } catch (e: Exception) {
             Log.e("WaveActionExecutor", "Failed to dispatch media key $keyCode: ${e.message}")
@@ -152,12 +175,8 @@ class WaveActionExecutor(private val context: Context) {
 
     fun release() {
         try {
-            if (isTorchOn) {
-                setTorchState(false)
-            }
             toneGenerator?.release()
             toneGenerator = null
-        } catch (_: Exception) {
-        }
+        } catch (_: Exception) {}
     }
 }

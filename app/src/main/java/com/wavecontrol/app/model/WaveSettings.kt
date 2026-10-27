@@ -27,17 +27,37 @@ data class WaveSettings(
     val actionWaveUp: WaveAction = WaveAction.VOLUME_UP,
     val actionWaveDown: WaveAction = WaveAction.VOLUME_DOWN,
     val actionHandHover: WaveAction = WaveAction.MEDIA_PLAY_PAUSE,
-    val actionProximity: WaveAction = WaveAction.MEDIA_PLAY_PAUSE
+    val actionProximity: WaveAction = WaveAction.MEDIA_PLAY_PAUSE,
+
+    // Gesture Enablement Toggles
+    val isWaveLeftEnabled: Boolean = true,
+    val isWaveRightEnabled: Boolean = true,
+    val isWaveUpEnabled: Boolean = true,
+    val isWaveDownEnabled: Boolean = true,
+    val isHandHoverEnabled: Boolean = true,
+    val isProximityActionEnabled: Boolean = true
 ) {
     fun getActionForGesture(gesture: GestureType): WaveAction {
         return when (gesture) {
-            GestureType.WAVE_LEFT -> actionWaveLeft
-            GestureType.WAVE_RIGHT -> actionWaveRight
-            GestureType.WAVE_UP -> actionWaveUp
-            GestureType.WAVE_DOWN -> actionWaveDown
-            GestureType.HAND_HOVER -> actionHandHover
-            GestureType.PROXIMITY_WAVE -> actionProximity
+            GestureType.WAVE_LEFT -> if (isWaveLeftEnabled) actionWaveLeft else WaveAction.NONE
+            GestureType.WAVE_RIGHT -> if (isWaveRightEnabled) actionWaveRight else WaveAction.NONE
+            GestureType.WAVE_UP -> if (isWaveUpEnabled) actionWaveUp else WaveAction.NONE
+            GestureType.WAVE_DOWN -> if (isWaveDownEnabled) actionWaveDown else WaveAction.NONE
+            GestureType.HAND_HOVER -> if (isHandHoverEnabled) actionHandHover else WaveAction.NONE
+            GestureType.PROXIMITY_WAVE -> if (isProximityActionEnabled) actionProximity else WaveAction.NONE
             GestureType.NONE -> WaveAction.NONE
+        }
+    }
+
+    fun isGestureEnabled(gesture: GestureType): Boolean {
+        return when (gesture) {
+            GestureType.WAVE_LEFT -> isWaveLeftEnabled
+            GestureType.WAVE_RIGHT -> isWaveRightEnabled
+            GestureType.WAVE_UP -> isWaveUpEnabled
+            GestureType.WAVE_DOWN -> isWaveDownEnabled
+            GestureType.HAND_HOVER -> isHandHoverEnabled
+            GestureType.PROXIMITY_WAVE -> isProximityActionEnabled
+            GestureType.NONE -> false
         }
     }
 }
