@@ -1,5 +1,6 @@
 package com.wavecontrol.app.detector
 
+import android.util.Log
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageProxy
 import com.wavecontrol.app.model.GestureType
@@ -8,6 +9,7 @@ import kotlin.math.abs
 class CameraWaveDetector(
     private var sensitivity: Float = 0.55f,
     private var cooldownMs: Long = 750L,
+    private var swapAxes: Boolean = false,
     private var invertHorizontal: Boolean = false,
     private var invertVertical: Boolean = false,
     private val onGestureDetected: (DetectionEvent) -> Unit,
@@ -39,11 +41,13 @@ class CameraWaveDetector(
     fun updateConfig(
         sensitivity: Float,
         cooldownMs: Long,
+        swapAxes: Boolean = false,
         invertHorizontal: Boolean = false,
         invertVertical: Boolean = false
     ) {
         this.sensitivity = sensitivity.coerceIn(0.1f, 1.0f)
         this.cooldownMs = cooldownMs.coerceIn(300L, 3000L)
+        this.swapAxes = swapAxes
         this.invertHorizontal = invertHorizontal
         this.invertVertical = invertVertical
     }
@@ -60,6 +64,7 @@ class CameraWaveDetector(
             val rotationDegrees = image.imageInfo.rotationDegrees
 
             val currentGrid = FloatArray(totalCells)
+            val bufferLimit = buffer.limit()
 
             // Step sizes in sensor coordinates
             val stepX = width / gridSize
@@ -74,7 +79,7 @@ class CameraWaveDetector(
                 for (gx in 0 until gridSize) {
                     val px = gx * stepX + stepX / 2
                     val index = rowOffset + px * pixelStride
-                    val lum = if (index < buffer.remaining()) {
+                    val lum = if (index in 0 until bufferLimit) {
                         (buffer.get(index).toInt() and 0xFF).toFloat()
                     } else {
                         0f
@@ -91,7 +96,6 @@ class CameraWaveDetector(
             if (!hasPrev) {
                 System.arraycopy(currentGrid, 0, prevGrid, 0, totalCells)
                 hasPrev = true
-                image.close()
                 return
             }
 
@@ -121,17 +125,31 @@ class CameraWaveDetector(
                         val u = gx.toFloat() / (gridSize - 1f)
                         val v = gy.toFloat() / (gridSize - 1f)
 
-                        // Transform sensor coords to screen portrait coords taking rotation into account
-                        val (rotX, rotY) = when (rotationDegrees) {
+                        // Map sensor coordinates into portrait screen coordinates:
+                        // Front camera sensors on mobile devices are mounted in landscape (sensor width = 640 along phone height,
+                        // sensor height = 480 along phone width).
+                        // In a service, rotationDegrees is usually 0 (or uncompensated).
+                        // Matching rotation ensures X = phone horizontal, Y = phone vertical.
+                        val (normX, normY) = when (rotationDegrees) {
                             90 -> Pair(1f - v, u)
                             180 -> Pair(1f - u, 1f - v)
                             270 -> Pair(v, 1f - u)
-                            else -> Pair(u, v)
+                            else -> {
+                                // Default for front camera sensor in portrait phone
+                                Pair(v, 1f - u)
+                            }
                         }
 
-                        // Front camera is horizontally mirrored
-                        var screenX = 1f - rotX
-                        var screenY = rotY
+                        // Mirror front camera horizontally for natural user perspective
+                        var screenX = 1f - normX
+                        var screenY = normY
+
+                        // Apply Swap Axes if user device requires or user prefers
+                        if (swapAxes) {
+                            val temp = screenX
+                            screenX = screenY
+                            screenY = temp
+                        }
 
                         if (invertHorizontal) screenX = 1f - screenX
                         if (invertVertical) screenY = 1f - screenY
@@ -190,7 +208,6 @@ class CameraWaveDetector(
 
             // Honor cooldown period
             if (now - lastTriggerTime < cooldownMs) {
-                image.close()
                 return
             }
 
@@ -208,12 +225,12 @@ class CameraWaveDetector(
                     val absDy = abs(dy)
 
                     // Movement threshold based on sensitivity
-                    val moveThreshold = 0.28f - (sensitivity * 0.13f) // ~0.15 to 0.25
+                    val moveThreshold = 0.26f - (sensitivity * 0.12f) // ~0.14 to 0.24
 
                     var detectedGesture = GestureType.NONE
 
                     // Check Horizontal Dominance (Wave Left / Right)
-                    if (absDx > moveThreshold && absDx > absDy * 1.25f) {
+                    if (absDx > moveThreshold && absDx > absDy * 1.2f) {
                         detectedGesture = if (dx > 0) {
                             GestureType.WAVE_RIGHT
                         } else {
@@ -221,12 +238,12 @@ class CameraWaveDetector(
                         }
                     }
                     // Check Vertical Dominance (Wave Up / Down)
-                    else if (absDy > moveThreshold && absDy > absDx * 1.25f) {
-                        // Note: screenY = 0 is top of screen, screenY = 1 is bottom of screen
+                    else if (absDy > moveThreshold && absDy > absDx * 1.2f) {
+                        // In screen coordinates: dy > 0 is downwards, dy < 0 is upwards
                         detectedGesture = if (dy > 0) {
-                            GestureType.WAVE_DOWN // Moving towards bottom
+                            GestureType.WAVE_DOWN
                         } else {
-                            GestureType.WAVE_UP   // Moving towards top
+                            GestureType.WAVE_UP
                         }
                     }
 
@@ -247,7 +264,6 @@ class CameraWaveDetector(
                                 timestamp = now
                             )
                         )
-                        image.close()
                         return
                     }
                 }
@@ -290,10 +306,14 @@ class CameraWaveDetector(
                 isHovering = false
             }
 
-        } catch (e: Exception) {
-            e.printStackTrace()
+        } catch (t: Throwable) {
+            Log.e("CameraWaveDetector", "Error analyzing frame: ${t.message}", t)
         } finally {
-            image.close()
+            try {
+                image.close()
+            } catch (t: Throwable) {
+                Log.w("CameraWaveDetector", "Error closing image proxy: ${t.message}")
+            }
         }
     }
 }

@@ -26,6 +26,7 @@ class WaveSettingsRepository(context: Context) {
             isSoundFeedbackEnabled = prefs.getBoolean(KEY_IS_SOUND_ENABLED, true),
             isLowPowerMode = prefs.getBoolean(KEY_IS_LOW_POWER_MODE, false),
             pauseOnScreenOff = prefs.getBoolean(KEY_PAUSE_ON_SCREEN_OFF, true),
+            swapAxes = prefs.getBoolean(KEY_SWAP_AXES, false),
             invertHorizontal = prefs.getBoolean(KEY_INVERT_HORIZONTAL, false),
             invertVertical = prefs.getBoolean(KEY_INVERT_VERTICAL, false),
             sensitivity = prefs.getFloat(KEY_SENSITIVITY, 0.55f),
@@ -55,6 +56,7 @@ class WaveSettingsRepository(context: Context) {
             .putBoolean(KEY_IS_SOUND_ENABLED, s.isSoundFeedbackEnabled)
             .putBoolean(KEY_IS_LOW_POWER_MODE, s.isLowPowerMode)
             .putBoolean(KEY_PAUSE_ON_SCREEN_OFF, s.pauseOnScreenOff)
+            .putBoolean(KEY_SWAP_AXES, s.swapAxes)
             .putBoolean(KEY_INVERT_HORIZONTAL, s.invertHorizontal)
             .putBoolean(KEY_INVERT_VERTICAL, s.invertVertical)
             .putFloat(KEY_SENSITIVITY, s.sensitivity)
@@ -87,6 +89,7 @@ class WaveSettingsRepository(context: Context) {
         private const val KEY_IS_SOUND_ENABLED = "is_sound_enabled"
         private const val KEY_IS_LOW_POWER_MODE = "is_low_power_mode"
         private const val KEY_PAUSE_ON_SCREEN_OFF = "pause_on_screen_off"
+        private const val KEY_SWAP_AXES = "swap_axes"
         private const val KEY_INVERT_HORIZONTAL = "invert_horizontal"
         private const val KEY_INVERT_VERTICAL = "invert_vertical"
         private const val KEY_SENSITIVITY = "sensitivity"
@@ -99,11 +102,11 @@ class WaveSettingsRepository(context: Context) {
         private const val KEY_ACTION_PROXIMITY = "action_proximity"
 
         @Volatile
-        private var INSTANCE: WaveSettingsRepository? = null
+        private var instance: WaveSettingsRepository? = null
 
         fun getInstance(context: Context): WaveSettingsRepository {
-            return INSTANCE ?: synchronized(this) {
-                INSTANCE ?: WaveSettingsRepository(context).also { INSTANCE = it }
+            return instance ?: synchronized(this) {
+                instance ?: WaveSettingsRepository(context).also { instance = it }
             }
         }
     }

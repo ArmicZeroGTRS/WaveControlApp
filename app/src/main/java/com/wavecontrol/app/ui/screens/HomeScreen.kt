@@ -4,7 +4,6 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -22,8 +21,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Bolt
-import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.PowerSettingsNew
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -37,7 +34,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -55,13 +51,10 @@ fun HomeScreen(
     lastDetectedEvent: DetectionEvent?,
     hasCameraPermission: Boolean,
     hasNotificationPermission: Boolean,
-    isAccessibilityEnabled: Boolean,
-    canDrawOverlays: Boolean,
     onToggleMasterSwitch: (Boolean) -> Unit,
+    onToggleSwapAxes: () -> Unit,
     onRequestCamera: () -> Unit,
     onRequestNotification: () -> Unit,
-    onRequestAccessibility: () -> Unit,
-    onRequestOverlay: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val scrollState = rememberScrollState()
@@ -144,7 +137,7 @@ fun HomeScreen(
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     SensorStatusChip(
-                        name = "Kamera",
+                        name = "Kamera Depan",
                         isActive = settings.isEnabled && settings.isCameraWaveEnabled && hasCameraPermission,
                         modifier = Modifier.weight(1f)
                     )
@@ -154,8 +147,8 @@ fun HomeScreen(
                         modifier = Modifier.weight(1f)
                     )
                     SensorStatusChip(
-                        name = "Aksesibilitas",
-                        isActive = isAccessibilityEnabled,
+                        name = "M-Banking Safe",
+                        isActive = true,
                         modifier = Modifier.weight(1f)
                     )
                 }
@@ -218,25 +211,23 @@ fun HomeScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Camera Preview Card
+        // Camera Preview & Live Motion Radar Card
         CameraPreviewCard(
             hasCameraPermission = hasCameraPermission,
             isServiceRunning = isServiceRunning,
-            lastDetectedGesture = lastDetectedEvent?.gesture ?: GestureType.NONE
+            lastDetectedGesture = lastDetectedEvent?.gesture ?: GestureType.NONE,
+            swapAxes = settings.swapAxes,
+            onToggleSwapAxes = onToggleSwapAxes
         )
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Permissions Card
+        // Permissions Card (Safe, No Accessibility, No Restricted Settings)
         PermissionCard(
             hasCameraPermission = hasCameraPermission,
             hasNotificationPermission = hasNotificationPermission,
-            isAccessibilityEnabled = isAccessibilityEnabled,
-            canDrawOverlays = canDrawOverlays,
             onRequestCamera = onRequestCamera,
-            onRequestNotification = onRequestNotification,
-            onRequestAccessibility = onRequestAccessibility,
-            onRequestOverlay = onRequestOverlay
+            onRequestNotification = onRequestNotification
         )
     }
 }

@@ -7,12 +7,13 @@ import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import android.provider.Settings
+import android.util.Log
 import android.view.Gravity
-import android.view.LayoutInflater
 import android.view.View
 import android.view.WindowManager
 import android.widget.FrameLayout
 import android.widget.TextView
+import android.widget.Toast
 import com.wavecontrol.app.model.GestureType
 import com.wavecontrol.app.model.WaveAction
 
@@ -25,14 +26,27 @@ class FloatingOverlayManager(private val context: Context) {
     private var dismissRunnable: Runnable? = null
 
     val canDrawOverlays: Boolean
-        get() = Settings.canDrawOverlays(context)
+        get() = try {
+            Settings.canDrawOverlays(context)
+        } catch (_: Exception) {
+            false
+        }
 
     @SuppressLint("InflateParams")
     fun showGestureFeedback(gesture: GestureType, action: WaveAction) {
-        if (!canDrawOverlays || windowManager == null) return
-
         mainHandler.post {
             try {
+                // If canDrawOverlays is not granted, fallback immediately to Toast
+                if (!canDrawOverlays || windowManager == null) {
+                    Toast.makeText(
+                        context,
+                        "${gesture.emoji} ${gesture.title} → ${action.title}",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    return@post
+                }
+
+                // If overlay is granted, show the floating pill
                 if (overlayView == null) {
                     val container = FrameLayout(context).apply {
                         setPadding(32, 20, 32, 20)
@@ -48,7 +62,6 @@ class FloatingOverlayManager(private val context: Context) {
                         setTextColor(0xFFF8FAFC.toInt())
                         textSize = 14f
                         gravity = Gravity.CENTER
-                        setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0)
                     }
 
                     container.addView(textView)
@@ -68,14 +81,13 @@ class FloatingOverlayManager(private val context: Context) {
                         PixelFormat.TRANSLUCENT
                     ).apply {
                         gravity = Gravity.TOP or Gravity.CENTER_HORIZONTAL
-                        y = 120 // Near top notch/camera
+                        y = 120
                     }
 
                     overlayView = container
                     windowManager.addView(container, layoutParams)
                 }
 
-                // Update text
                 val container = overlayView as? FrameLayout
                 val textView = container?.getChildAt(0) as? TextView
                 textView?.text = "${gesture.emoji} ${gesture.title} → ${action.title}"
@@ -83,24 +95,31 @@ class FloatingOverlayManager(private val context: Context) {
                 overlayView?.alpha = 1.0f
                 overlayView?.visibility = View.VISIBLE
 
-                // Cancel previous hide
                 dismissRunnable?.let { mainHandler.removeCallbacks(it) }
 
-                // Schedule auto-hide
                 val runnable = Runnable {
-                    overlayView?.animate()
-                        ?.alpha(0f)
-                        ?.setDuration(300L)
-                        ?.withEndAction {
-                            overlayView?.visibility = View.GONE
-                        }
-                        ?.start()
+                    try {
+                        overlayView?.animate()
+                            ?.alpha(0f)
+                            ?.setDuration(300L)
+                            ?.withEndAction {
+                                overlayView?.visibility = View.GONE
+                            }
+                            ?.start()
+                    } catch (_: Exception) {}
                 }
                 dismissRunnable = runnable
                 mainHandler.postDelayed(runnable, 1400L)
 
             } catch (e: Exception) {
-                e.printStackTrace()
+                Log.w("FloatingOverlayManager", "Failed to render overlay feedback: ${e.message}")
+                try {
+                    Toast.makeText(
+                        context,
+                        "${gesture.emoji} ${gesture.title} → ${action.title}",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                } catch (_: Exception) {}
             }
         }
     }
@@ -109,12 +128,13 @@ class FloatingOverlayManager(private val context: Context) {
         mainHandler.post {
             try {
                 dismissRunnable?.let { mainHandler.removeCallbacks(it) }
-                if (overlayView != null) {
-                    windowManager?.removeView(overlayView)
+                dismissRunnable = null
+                if (overlayView != null && windowManager != null) {
+                    windowManager.removeView(overlayView)
                     overlayView = null
                 }
             } catch (e: Exception) {
-                e.printStackTrace()
+                Log.w("FloatingOverlayManager", "Failed to remove overlay view: ${e.message}")
             }
         }
     }

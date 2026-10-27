@@ -2,11 +2,8 @@ package com.wavecontrol.app.ui
 
 import android.Manifest
 import android.content.Context
-import android.content.Intent
 import android.content.pm.PackageManager
-import android.net.Uri
 import android.os.Build
-import android.provider.Settings
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -40,7 +37,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.core.content.ContextCompat
-import com.wavecontrol.app.accessibility.WaveAccessibilityService
 import com.wavecontrol.app.detector.DetectionEvent
 import com.wavecontrol.app.model.GestureType
 import com.wavecontrol.app.model.WaveAction
@@ -80,14 +76,6 @@ fun MainApp() {
         )
     }
 
-    var isAccessibilityEnabled by remember {
-        mutableStateOf(WaveAccessibilityService.isAccessibilityEnabled(context))
-    }
-
-    var canDrawOverlays by remember {
-        mutableStateOf(Settings.canDrawOverlays(context))
-    }
-
     // Permission Launchers
     val cameraPermissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission()
@@ -111,8 +99,6 @@ fun MainApp() {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 hasNotificationPermission = ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED
             }
-            isAccessibilityEnabled = WaveAccessibilityService.isAccessibilityEnabled(context)
-            canDrawOverlays = Settings.canDrawOverlays(context)
         }
         listener.invoke()
         onDispose { }
@@ -200,40 +186,28 @@ fun MainApp() {
                     lastDetectedEvent = lastEvent,
                     hasCameraPermission = hasCameraPermission,
                     hasNotificationPermission = hasNotificationPermission,
-                    isAccessibilityEnabled = isAccessibilityEnabled,
-                    canDrawOverlays = canDrawOverlays,
                     onToggleMasterSwitch = { enabled ->
                         repository.updateSettings { it.copy(isEnabled = enabled) }
                     },
-                    onRequestCamera = {
-                        cameraPermissionLauncher.launch(Manifest.permission.CAMERA)
+                    onToggleSwapAxes = {
+                        val current = settings.swapAxes
+                        repository.updateSettings { it.copy(swapAxes = !current) }
+                        Toast.makeText(
+                            context,
+                            if (!current) "Sumbu X/Y Ditukar" else "Sumbu Normal",
+                            Toast.LENGTH_SHORT
+                        ).show()
                     },
+                    onRequestCamera = { cameraPermissionLauncher.launch(Manifest.permission.CAMERA) },
                     onRequestNotification = {
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                             notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
                         }
-                    },
-                    onRequestAccessibility = {
-                        val intent = Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS).apply {
-                            flags = Intent.FLAG_ACTIVITY_NEW_TASK
-                        }
-                        context.startActivity(intent)
-                        Toast.makeText(context, "Cari dan aktifkan 'Wave Control' di daftar layanan", Toast.LENGTH_LONG).show()
-                    },
-                    onRequestOverlay = {
-                        val intent = Intent(
-                            Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-                            Uri.parse("package:${context.packageName}")
-                        ).apply {
-                            flags = Intent.FLAG_ACTIVITY_NEW_TASK
-                        }
-                        context.startActivity(intent)
                     }
                 )
 
                 1 -> GestureConfigScreen(
                     settings = settings,
-                    isAccessibilityEnabled = isAccessibilityEnabled,
                     onUpdateGestureAction = { gesture, action ->
                         repository.updateSettings { s ->
                             when (gesture) {
@@ -248,20 +222,13 @@ fun MainApp() {
                         }
                     },
                     onTestAction = { action ->
-                        val executed = actionExecutor.execute(action, settings)
-                        Toast.makeText(
-                            context,
-                            if (executed) "Menjalankan: ${action.title}" else "Aksi butuh izin atau tidak didukung",
-                            Toast.LENGTH_SHORT
-                        ).show()
+                        actionExecutor.execute(action, settings)
                     }
                 )
 
                 2 -> SettingsScreen(
                     settings = settings,
-                    onUpdateSettings = { update ->
-                        repository.updateSettings(update)
-                    }
+                    onUpdateSettings = { updater -> repository.updateSettings(updater) }
                 )
 
                 3 -> GuideScreen()

@@ -6,14 +6,17 @@
 [![Platform](https://img.shields.io/badge/Platform-Android-green.svg)](https://developer.android.com)
 [![Language](https://img.shields.io/badge/Language-Kotlin%202.3-purple.svg)](https://kotlinlang.org)
 
-Aplikasi kontrol gerakan tangan (*Wave Control*) tanpa sentuh untuk Android menggunakan kamera depan dan sensor jarak (*proximity sensor*). Dibangun menggunakan **Jetpack Compose Material 3**, **CameraX**, dan **Accessibility Service**.
+Aplikasi kontrol gerakan tangan (*Wave Control*) tanpa sentuh untuk Android menggunakan kamera depan dan sensor jarak (*proximity sensor*). Dibangun menggunakan **Jetpack Compose Material 3** dan **AndroidX CameraX**.
+
+> [!NOTE]
+> **Versi 1.5.5**: Bebas dari Layanan Aksesibilitas (*Accessibility Service*) dan bebas dari Setelan Terbatas (*Restricted Settings*). **100% Aman digunakan bersama aplikasi Mobile Banking (BCA, Mandiri, BRImo, Seabank, dll.) tanpa terblokir atau terdeteksi berbahaya oleh Google Play Protect.**
 
 ---
 
 ## 📥 Unduh APK Siap Pakai
 
 Unduh langsung versi terbaru tanpa perlu kompilasi:
-👉 **[Download WaveControl-v1.5.0.apk](https://github.com/ArmicZeroGTRS/WaveControlApp/releases/download/v1.5.0/WaveControl-v1.5.0.apk)** *(Versi 1.5.0)*
+👉 **[Download WaveControl-v1.5.5.apk](https://github.com/ArmicZeroGTRS/WaveControlApp/releases/download/v1.5.5/WaveControl-v1.5.5.apk)** *(Versi 1.5.5)*
 
 ---
 
@@ -27,59 +30,49 @@ Unduh langsung versi terbaru tanpa perlu kompilasi:
 | **UI Framework** | Jetpack Compose (Material 3) |
 | **Kamera Engine** | AndroidX CameraX (ImageAnalysis YUV-420-888) |
 | **Background Processing** | Android Foreground Service + StateFlow |
-| **Gesture Simulation** | Android AccessibilityService (`dispatchGesture`) |
+| **Keamanan Perangkat** | 100% Aman M-Banking & Android 15 (Tanpa Layanan Aksesibilitas) |
 
 ---
 
 ## ✨ Fitur Utama
 
 ### 1. Deteksi Gerakan Tangan Kamera Depan (*Optical Motion Tracking*)
-* **👈 Lambaian ke Kiri (Wave Left):** Sapuan tangan ke arah kiri layar.
-* **👉 Lambaian ke Kanan (Wave Right):** Sapuan tangan ke arah kanan layar.
-* **👆 Lambaian ke Atas (Wave Up):** Sapuan tangan ke arah atas.
-* **👇 Lambaian ke Bawah (Wave Down):** Sapuan tangan ke arah bawah.
-* **✋ Tahan Telapak Tangan (Hand Hover / Hold):** Menahan tangan diam di depan kamera selama ~0.9 detik.
-* **Algoritma Efisien:** Menggunakan *downsampled optical motion centroid analysis* yang efisien, responsif (< 2 ms per frame), dan sangat hemat konsumsi baterai/CPU (< 1-2%).
+* **👈 Lambaian ke Kiri (Wave Left):** Gerakan telapak tangan melintas ke arah kiri layar.
+* **👉 Lambaian ke Kanan (Wave Right):** Gerakan telapak tangan melintas ke arah kanan layar.
+* **👆 Lambaian ke Atas (Wave Up):** Gerakan telapak tangan mengarah ke atas.
+* **👇 Lambaian ke Bawah (Wave Down):** Gerakan telapak tangan mengarah ke bawah.
+* **✋ Tahan Telapak Tangan (Hand Hover):** Menahan telapak tangan di depan kamera (~0.8 detik).
+* **Fitur Tukar Sumbu (Swap Axes):** Tersedia sakelar "Tukar Sumbu Gesture (X ↔ Y)" jika orientasi sensor perangkat Anda terbalik.
 
 ### 2. Sensor Jarak Tambahan (*Proximity Sensor Wave*)
 * **📱 Kibasan Sensor Jarak:** Mendeteksi kibasan kilat di atas layar HP (pada jarak < 5 cm).
 * Bekerja sangat cepat bahkan dalam kondisi ruangan minim cahaya atau gelap gulita.
 
-### 3. Pemetaan Aksi Sistem & Multimedia (*Hands-Free Action Mapping*)
-Setiap gerakan di atas dapat dipetakan secara bebas ke berbagai aksi:
-* **Media Playback:** Putar / Jeda (*Play/Pause*), Lagu/Video Selanjutnya (*Next Track*), Lagu/Video Sebelumnya (*Previous Track*). Kompatibel dengan Spotify, YouTube Music, Netflix, dll.
-* **Volume Suara:** Naikkan Volume (*Volume Up*), Turunkan Volume (*Volume Down*).
-* **Auto-Scroll Layar (TikTok / Reels / Shorts / Browser):** Mengusap layar secara global ke atas atau ke bawah tanpa menyentuh layar.
-* **Navigasi Sistem:** Tombol Kembali (*Back*), Beranda (*Home*), Aplikasi Terkini (*Recents*), Tarik Panel Notifikasi, dan Kunci Layar (*Lock Screen*).
-* **Peralatan:** Nyalakan/Matikan Senter (*Torch Toggle*).
+### 3. Pemetaan Aksi Multimedia & Alat (*Hands-Free Action Mapping*)
+Setiap gerakan dapat dipetakan secara bebas ke berbagai aksi yang 100% aman:
+* **Media Playback:** Putar / Jeda (*Play/Pause*), Trek Selanjutnya (*Next Track*), Trek Sebelumnya (*Previous Track*). Kompatibel dengan Spotify, YouTube Music, Netflix, Apple Music, VLC, dll.
+* **Volume Suara:** Naikkan Volume (*Volume Up*), Turunkan Volume (*Volume Down*), Senyap Suara (*Mute/Unmute*).
+* **Peralatan:** Nyalakan/Matikan Senter (*Torch Toggle* / *Torch On* / *Torch Off*).
 
-### 4. Layanan Latar Belakang & Floating HUD (*Overlay*)
-* **Foreground Service:** Deteksi tetap aktif saat Anda membuka aplikasi lain (didukung notifikasi status Android 12–15).
-* **Floating Badge / HUD:** Animasi umpan balik halus yang melayang di atas layar saat gerakan berhasil dikenali.
-* **Haptic & Sound Feedback:** Getaran haptic dan nada bunyi (*chime*) sebagai konfirmasi deteksi.
+### 4. Manajemen Baterai & Daya (*Battery Saver*)
+* **Jeda Otomatis Saat Layar Mati:** Sensor kamera dan sensor jarak otomatis dinonaktifkan saat layar terkunci / layar mati (*Screen Off*) guna menjaga daya tahan baterai.
+* **Low Power Mode:** Optimalisasi interval sampling frame kamera di latar belakang.
 
 ---
 
-## 🛠️ Izin yang Diperlukan
+## 🛠️ Izin yang Diperlukan (Hanya Izin Standar)
 1. **Kamera (Camera):** Memproses frame kamera depan secara lokal untuk mendeteksi arah sapuan tangan (tanpa menyimpan rekaman).
 2. **Notifikasi (Notification API 33+):** Menjaga Foreground Service tetap aktif di latar belakang.
-3. **Layanan Aksesibilitas (Accessibility Service):** Diperlukan untuk swipe layar otomatis (TikTok/Reels) dan navigasi sistem (Home, Back, Lock).
-4. **Tampilan di Atas Aplikasi Lain (Display Over Other Apps):** Menampilkan badge HUD umpan balik saat membuka aplikasi lain.
+
+> **Tidak memerlukan izin Aksesibilitas atau Setelan Terbatas.**
 
 ---
 
-## 🚀 Cara Memasang & Menggunakan
-
-### Instalasi via ADB
-```bash
-adb install WaveControl-v1.0.0.apk
-```
-
-### Instalasi Manual di Ponsel
-1. Unduh berkas [`WaveControl-v1.0.0.apk`](https://github.com/ArmicZeroGTRS/WaveControlApp/releases/download/v1.0.0/WaveControl-v1.0.0.apk).
-2. Buka berkas APK melalui File Manager di HP Anda.
+## 🚀 Cara Memasang di Ponsel
+1. Unduh berkas [`WaveControl-v1.5.5.apk`](https://github.com/ArmicZeroGTRS/WaveControlApp/releases/download/v1.5.5/WaveControl-v1.5.5.apk).
+2. Buka berkas APK melalui File Manager atau Browser di HP Anda.
 3. Berikan izin pemasangan sumber tidak dikenal (*Install unknown apps*).
-4. Buka aplikasi **Wave Control**, berikan izin yang diminta, dan nyalakan sakelar utama!
+4. Buka aplikasi **Wave Control**, berikan izin Kamera & Notifikasi, lalu aktifkan sakelar utama!
 
 ---
 

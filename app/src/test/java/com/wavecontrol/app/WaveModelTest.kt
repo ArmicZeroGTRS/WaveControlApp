@@ -20,6 +20,7 @@ class WaveModelTest {
         assertEquals(WaveAction.MEDIA_PLAY_PAUSE, settings.actionHandHover)
         assertEquals(WaveAction.MEDIA_PLAY_PAUSE, settings.actionProximity)
         assertTrue(settings.pauseOnScreenOff)
+        assertFalse(settings.swapAxes)
         assertFalse(settings.invertHorizontal)
         assertFalse(settings.invertVertical)
     }
@@ -27,25 +28,24 @@ class WaveModelTest {
     @Test
     fun getActionForGesture_returnsCorrectAction() {
         val settings = WaveSettings(
-            actionWaveLeft = WaveAction.GLOBAL_BACK,
-            actionWaveRight = WaveAction.SCROLL_DOWN,
-            actionWaveUp = WaveAction.SCROLL_UP,
-            actionWaveDown = WaveAction.GLOBAL_NOTIFICATIONS
+            actionWaveLeft = WaveAction.VOLUME_MUTE,
+            actionWaveRight = WaveAction.TORCH_TOGGLE,
+            actionWaveUp = WaveAction.VOLUME_UP,
+            actionWaveDown = WaveAction.VOLUME_DOWN
         )
 
-        assertEquals(WaveAction.GLOBAL_BACK, settings.getActionForGesture(GestureType.WAVE_LEFT))
-        assertEquals(WaveAction.SCROLL_DOWN, settings.getActionForGesture(GestureType.WAVE_RIGHT))
-        assertEquals(WaveAction.SCROLL_UP, settings.getActionForGesture(GestureType.WAVE_UP))
-        assertEquals(WaveAction.GLOBAL_NOTIFICATIONS, settings.getActionForGesture(GestureType.WAVE_DOWN))
+        assertEquals(WaveAction.VOLUME_MUTE, settings.getActionForGesture(GestureType.WAVE_LEFT))
+        assertEquals(WaveAction.TORCH_TOGGLE, settings.getActionForGesture(GestureType.WAVE_RIGHT))
+        assertEquals(WaveAction.VOLUME_UP, settings.getActionForGesture(GestureType.WAVE_UP))
+        assertEquals(WaveAction.VOLUME_DOWN, settings.getActionForGesture(GestureType.WAVE_DOWN))
         assertEquals(WaveAction.NONE, settings.getActionForGesture(GestureType.NONE))
     }
 
     @Test
-    fun accessibilityActions_requireAccessibilityService() {
-        assertTrue(WaveAction.SCROLL_DOWN.requiresAccessibility)
-        assertTrue(WaveAction.SCROLL_UP.requiresAccessibility)
-        assertTrue(WaveAction.GLOBAL_BACK.requiresAccessibility)
-        assertTrue(WaveAction.GLOBAL_HOME.requiresAccessibility)
-        assertTrue(WaveAction.LOCK_SCREEN.requiresAccessibility)
+    fun safeActions_doNotRequireAccessibilityService() {
+        // Zero actions require accessibility service to ensure 100% mobile banking safety
+        WaveAction.values().forEach { action ->
+            assertFalse("Action $action should not require accessibility", action.requiresAccessibility)
+        }
     }
 }

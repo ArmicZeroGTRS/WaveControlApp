@@ -40,7 +40,7 @@ fun SettingsScreen(
             .verticalScroll(scrollState)
             .padding(16.dp)
     ) {
-        // Sensitivity Card
+        // Calibration & Sensitivity Card
         Card(
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(20.dp),
@@ -187,8 +187,8 @@ fun SettingsScreen(
                 )
 
                 SettingSwitchRow(
-                    title = "Badge / HUD Mengambang",
-                    subtitle = "Tampilkan indikator gerakan melayang di atas aplikasi lain",
+                    title = "Badge / HUD Mengambang (Pill Feedback)",
+                    subtitle = "Tampilkan indikator notifikasi gerakan hands-free",
                     checked = settings.isFloatingHudEnabled,
                     onCheckedChange = { onUpdateSettings { s -> s.copy(isFloatingHudEnabled = it) } }
                 )
@@ -220,7 +220,7 @@ fun SettingsScreen(
         ) {
             Column(modifier = Modifier.padding(18.dp)) {
                 Text(
-                    text = "Kalibrasi Sumbu Lanjutan (Opsional)",
+                    text = "Kalibrasi Sumbu Gerakan (Gesture Orientation)",
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold
                 )
@@ -228,15 +228,22 @@ fun SettingsScreen(
                 Spacer(modifier = Modifier.height(14.dp))
 
                 SettingSwitchRow(
+                    title = "Tukar Sumbu Gesture (X ↔ Y)",
+                    subtitle = "Aktifkan jika gerakan Horizontal (kiri-kanan) terdeteksi sebagai Vertikal (atas-bawah) atau sebaliknya",
+                    checked = settings.swapAxes,
+                    onCheckedChange = { onUpdateSettings { s -> s.copy(swapAxes = it) } }
+                )
+
+                SettingSwitchRow(
                     title = "Balikkan Arah Horizontal",
-                    subtitle = "Tukar arah Kiri ⟷ Kanan jika orientasi kamera terbalik",
+                    subtitle = "Tukar arah Kiri ⟷ Kanan jika orientasi sensor terbalik",
                     checked = settings.invertHorizontal,
                     onCheckedChange = { onUpdateSettings { s -> s.copy(invertHorizontal = it) } }
                 )
 
                 SettingSwitchRow(
                     title = "Balikkan Arah Vertikal",
-                    subtitle = "Tukar arah Atas ⟷ Bawah jika orientasi kamera terbalik",
+                    subtitle = "Tukar arah Atas ⟷ Bawah jika orientasi sensor terbalik",
                     checked = settings.invertVertical,
                     onCheckedChange = { onUpdateSettings { s -> s.copy(invertVertical = it) } }
                 )

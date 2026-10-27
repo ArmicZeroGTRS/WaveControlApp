@@ -42,63 +42,31 @@ enum class WaveAction(
         category = "Suara",
         iconName = "VolumeDown"
     ),
-    SCROLL_DOWN(
-        title = "Gulir ke Bawah (Next TikTok/Reels)",
-        description = "Usap layar otomatis ke bawah untuk konten video pendek/web",
-        category = "Navigasi Layar",
-        iconName = "KeyboardArrowDown"
-    ),
-    SCROLL_UP(
-        title = "Gulir ke Atas (Prev Video)",
-        description = "Usap layar otomatis ke atas",
-        category = "Navigasi Layar",
-        iconName = "KeyboardArrowUp"
-    ),
-    GLOBAL_BACK(
-        title = "Tombol Kembali (Back)",
-        description = "Simulasi tombol kembali sistem",
-        category = "Sistem",
-        iconName = "ArrowBack"
-    ),
-    GLOBAL_HOME(
-        title = "Tombol Beranda (Home)",
-        description = "Kembali ke layar utama perangkat",
-        category = "Sistem",
-        iconName = "Home"
-    ),
-    GLOBAL_RECENTS(
-        title = "Aplikasi Terkini (Recents)",
-        description = "Buka daftar aplikasi yang sedang dibuka",
-        category = "Sistem",
-        iconName = "ViewCarousel"
-    ),
-    GLOBAL_NOTIFICATIONS(
-        title = "Buka Notifikasi",
-        description = "Tarik jendela panel notifikasi",
-        category = "Sistem",
-        iconName = "Notifications"
-    ),
-    LOCK_SCREEN(
-        title = "Kunci Layar",
-        description = "Matikan dan kunci layar HP tanpa menyentuh",
-        category = "Sistem",
-        iconName = "Lock"
+    VOLUME_MUTE(
+        title = "Mute / Hening Suara",
+        description = "Senyapkan suara media secara instan",
+        category = "Suara",
+        iconName = "VolumeOff"
     ),
     TORCH_TOGGLE(
         title = "Nyalakan / Matikan Senter",
         description = "Gunakan senter HP hands-free",
         category = "Alat",
         iconName = "FlashlightOn"
+    ),
+    TORCH_ON(
+        title = "Nyalakan Senter",
+        description = "Hidupkan flash kamera belakang",
+        category = "Alat",
+        iconName = "FlashlightOn"
+    ),
+    TORCH_OFF(
+        title = "Matikan Senter",
+        description = "Padamkan flash kamera belakang",
+        category = "Alat",
+        iconName = "FlashlightOff"
     );
 
     val requiresAccessibility: Boolean
-        get() = this in listOf(
-            SCROLL_DOWN,
-            SCROLL_UP,
-            GLOBAL_BACK,
-            GLOBAL_HOME,
-            GLOBAL_RECENTS,
-            GLOBAL_NOTIFICATIONS,
-            LOCK_SCREEN
-        )
+        get() = false
 }

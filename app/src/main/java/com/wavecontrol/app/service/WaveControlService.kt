@@ -13,6 +13,9 @@ import android.content.pm.ServiceInfo
 import android.os.Build
 import android.os.IBinder
 import android.os.PowerManager
+import android.util.Log
+import android.view.Surface
+import android.view.WindowManager
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.lifecycle.ProcessCameraProvider
@@ -26,7 +29,6 @@ import com.wavecontrol.app.R
 import com.wavecontrol.app.detector.CameraWaveDetector
 import com.wavecontrol.app.detector.DetectionEvent
 import com.wavecontrol.app.detector.ProximityWaveDetector
-import com.wavecontrol.app.model.GestureType
 import com.wavecontrol.app.model.WaveSettings
 import com.wavecontrol.app.model.WaveSettingsRepository
 import kotlinx.coroutines.CoroutineScope
@@ -59,7 +61,7 @@ class WaveControlService : Service(), LifecycleOwner {
     private var currentSettings: WaveSettings = WaveSettings()
     private var isDetectionPaused = false
 
-    // Screen State Receiver to pause camera and sensor when screen turns off
+    // Screen State Receiver to pause camera and sensor when screen turns off to save battery
     private val screenStateReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             when (intent?.action) {
@@ -109,6 +111,7 @@ class WaveControlService : Service(), LifecycleOwner {
                 cameraDetector?.updateConfig(
                     sensitivity = settings.sensitivity,
                     cooldownMs = settings.cooldownMs,
+                    swapAxes = settings.swapAxes,
                     invertHorizontal = settings.invertHorizontal,
                     invertVertical = settings.invertVertical
                 )
@@ -181,7 +184,7 @@ class WaveControlService : Service(), LifecycleOwner {
                     bindCameraUseCases()
                 }
             } catch (e: Exception) {
-                e.printStackTrace()
+                Log.e("WaveControlService", "Error setting up ProcessCameraProvider: ${e.message}")
             }
         }, ContextCompat.getMainExecutor(this))
     }
@@ -193,6 +196,7 @@ class WaveControlService : Service(), LifecycleOwner {
             cameraDetector = CameraWaveDetector(
                 sensitivity = currentSettings.sensitivity,
                 cooldownMs = currentSettings.cooldownMs,
+                swapAxes = currentSettings.swapAxes,
                 invertHorizontal = currentSettings.invertHorizontal,
                 invertVertical = currentSettings.invertVertical,
                 onGestureDetected = { event ->
@@ -203,7 +207,20 @@ class WaveControlService : Service(), LifecycleOwner {
                 }
             )
 
+            val windowManager = getSystemService(Context.WINDOW_SERVICE) as? WindowManager
+            @Suppress("DEPRECATION")
+            val displayRotation = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                try {
+                    display?.rotation ?: Surface.ROTATION_0
+                } catch (_: Exception) {
+                    Surface.ROTATION_0
+                }
+            } else {
+                windowManager?.defaultDisplay?.rotation ?: Surface.ROTATION_0
+            }
+
             val imageAnalysis = ImageAnalysis.Builder()
+                .setTargetRotation(displayRotation)
                 .setOutputImageFormat(ImageAnalysis.OUTPUT_IMAGE_FORMAT_YUV_420_888)
                 .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
                 .build()
@@ -219,7 +236,7 @@ class WaveControlService : Service(), LifecycleOwner {
                 imageAnalysis
             )
         } catch (e: Exception) {
-            e.printStackTrace()
+            Log.e("WaveControlService", "Error binding camera use cases: ${e.message}", e)
         }
     }
 
@@ -231,7 +248,7 @@ class WaveControlService : Service(), LifecycleOwner {
             proximityDetector?.stop()
             updateNotification("Wave Control Dijeda", "Sensor nonaktif ($reason)")
         } catch (e: Exception) {
-            e.printStackTrace()
+            Log.w("WaveControlService", "Error pausing detection: ${e.message}")
         }
     }
 
@@ -247,39 +264,52 @@ class WaveControlService : Service(), LifecycleOwner {
             }
             updateNotification("Wave Control Berjalan", "Mendeteksi gerakan tangan dan sensor jarak...")
         } catch (e: Exception) {
-            e.printStackTrace()
+            Log.w("WaveControlService", "Error resuming detection: ${e.message}")
         }
     }
 
     private fun handleGesture(event: DetectionEvent) {
         if (!currentSettings.isEnabled || isDetectionPaused) return
 
-        val action = currentSettings.getActionForGesture(event.gesture)
+        try {
+            val action = currentSettings.getActionForGesture(event.gesture)
 
-        // Execute action
-        actionExecutor.execute(action, currentSettings)
+            // Execute action
+            actionExecutor.execute(action, currentSettings)
 
-        // Show floating HUD feedback if enabled
-        if (currentSettings.isFloatingHudEnabled) {
-            overlayManager.showGestureFeedback(event.gesture, action)
+            // Show floating HUD feedback if enabled
+            if (currentSettings.isFloatingHudEnabled) {
+                overlayManager.showGestureFeedback(event.gesture, action)
+            }
+
+            // Notify UI subscribers
+            _lastGestureFlow.tryEmit(event)
+        } catch (e: Exception) {
+            Log.e("WaveControlService", "Error handling gesture ${event.gesture}: ${e.message}", e)
         }
-
-        // Notify UI subscribers
-        _lastGestureFlow.tryEmit(event)
     }
 
     private fun startForegroundServiceWithNotification() {
         val notification = buildNotification("Wave Control Berjalan", "Mendeteksi gerakan tangan dan sensor jarak...")
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            val fgsType = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-                ServiceInfo.FOREGROUND_SERVICE_TYPE_CAMERA
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                val fgsType = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                    ServiceInfo.FOREGROUND_SERVICE_TYPE_CAMERA
+                } else {
+                    0
+                }
+                startForeground(NOTIFICATION_ID, notification, fgsType)
             } else {
-                0
+                startForeground(NOTIFICATION_ID, notification)
             }
-            startForeground(NOTIFICATION_ID, notification, fgsType)
-        } else {
-            startForeground(NOTIFICATION_ID, notification)
+        } catch (e: Throwable) {
+            Log.w("WaveControlService", "Failed to startForeground with type: ${e.message}. Falling back.")
+            try {
+                startForeground(NOTIFICATION_ID, notification)
+            } catch (fallbackError: Throwable) {
+                Log.e("WaveControlService", "Failed to startForeground fallback: ${fallbackError.message}")
+            }
         }
     }
 
@@ -289,7 +319,7 @@ class WaveControlService : Service(), LifecycleOwner {
             val manager = getSystemService(NotificationManager::class.java)
             manager?.notify(NOTIFICATION_ID, notification)
         } catch (e: Exception) {
-            e.printStackTrace()
+            Log.w("WaveControlService", "Failed to update notification: ${e.message}")
         }
     }
 
@@ -346,7 +376,8 @@ class WaveControlService : Service(), LifecycleOwner {
             stopSelf()
             return START_NOT_STICKY
         }
-        return START_STICKY
+        // Return START_NOT_STICKY to prevent infinite restart loop crashes when system kills background service on Android 14/15
+        return START_NOT_STICKY
     }
 
     override fun onBind(intent: Intent?): IBinder? = null
@@ -391,17 +422,25 @@ class WaveControlService : Service(), LifecycleOwner {
         val liveMotionFlow = _liveMotionFlow.asSharedFlow()
 
         fun startService(context: Context) {
-            val intent = Intent(context, WaveControlService::class.java)
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                context.startForegroundService(intent)
-            } else {
-                context.startService(intent)
+            try {
+                val intent = Intent(context, WaveControlService::class.java)
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    context.startForegroundService(intent)
+                } else {
+                    context.startService(intent)
+                }
+            } catch (e: Exception) {
+                Log.e("WaveControlService", "Failed to start service: ${e.message}", e)
             }
         }
 
         fun stopService(context: Context) {
-            val intent = Intent(context, WaveControlService::class.java)
-            context.stopService(intent)
+            try {
+                val intent = Intent(context, WaveControlService::class.java)
+                context.stopService(intent)
+            } catch (e: Exception) {
+                Log.e("WaveControlService", "Failed to stop service: ${e.message}", e)
+            }
         }
     }
 }

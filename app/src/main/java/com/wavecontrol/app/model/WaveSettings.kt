@@ -9,8 +9,9 @@ data class WaveSettings(
     val isSoundFeedbackEnabled: Boolean = true,
     val isLowPowerMode: Boolean = false,
     val pauseOnScreenOff: Boolean = true, // Auto-pause detection when screen is off to preserve battery
-    val invertHorizontal: Boolean = false, // Swap Left <-> Right if user prefers
-    val invertVertical: Boolean = false,   // Swap Up <-> Down if user prefers
+    val swapAxes: Boolean = false,        // Tukar Sumbu X (Horizontal) dan Y (Vertikal)
+    val invertHorizontal: Boolean = false, // Balik arah Kiri <-> Kanan
+    val invertVertical: Boolean = false,   // Balik arah Atas <-> Bawah
     val sensitivity: Float = 0.55f,        // 0.1f (less sensitive) to 0.95f (more sensitive)
     val cooldownMs: Long = 750L,          // 400ms to 2000ms
 

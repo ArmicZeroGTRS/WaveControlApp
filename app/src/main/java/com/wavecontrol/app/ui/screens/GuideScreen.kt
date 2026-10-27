@@ -18,10 +18,11 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.BrightnessHigh
+import androidx.compose.material.icons.filled.FlashlightOn
 import androidx.compose.material.icons.filled.Headphones
 import androidx.compose.material.icons.filled.Lightbulb
 import androidx.compose.material.icons.filled.PanTool
-import androidx.compose.material.icons.filled.PhoneAndroid
+import androidx.compose.material.icons.filled.Security
 import androidx.compose.material.icons.filled.Speed
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -89,7 +90,7 @@ fun GuideScreen(modifier: Modifier = Modifier) {
             icon = Icons.Default.BrightnessHigh,
             iconTint = Color(0xFFF59E0B),
             title = "2. Pencahayaan Cukup",
-            desc = "Kamera memerlukan pencahayaan ruangan yang cukup agar kontras gerakan tangan dapat dianalisis dengan presisi."
+            desc = "Kamera memerlukan pencahayaan ruangan yang memadai agar kontras gerakan tangan dapat dianalisis dengan presisi."
         )
 
         GuideItemCard(
@@ -103,7 +104,7 @@ fun GuideScreen(modifier: Modifier = Modifier) {
 
         // Section: Kasus Penggunaan
         Text(
-            text = "Skenario Praktis",
+            text = "Skenario Praktis & Keamanan",
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Bold
         )
@@ -112,21 +113,28 @@ fun GuideScreen(modifier: Modifier = Modifier) {
             icon = Icons.Default.Headphones,
             iconTint = Color(0xFF8B5CF6),
             title = "Saat Memasak atau Olahraga",
-            desc = "Tangan basah atau kotor terkena minyak/bumbu? Cukup lambaikan tangan untuk ganti lagu di Spotify atau YouTube Music tanpa mengotori layar HP."
+            desc = "Tangan basah atau kotor? Cukup lambaikan tangan untuk ganti lagu di Spotify, YouTube, atur volume media, atau pause tanpa menyentuh HP."
         )
 
         GuideItemCard(
-            icon = Icons.Default.PhoneAndroid,
-            iconTint = Color(0xFFEC4899),
-            title = "Menonton TikTok / Reels / Shorts",
-            desc = "Letakkan HP di atas meja atau tripod, aktifkan fitur Gulir ke Bawah, dan sapukan tangan untuk berpindah ke video berikutnya tanpa memegang ponsel."
+            icon = Icons.Default.Security,
+            iconTint = Color(0xFF10B981),
+            title = "Aman Mobile Banking & Android 15",
+            desc = "Aplikasi ini 100% bebas dari Layanan Aksesibilitas dan Setelan Terbatas, sehingga tidak akan memicu blokir keamanan di BCA, Mandiri, BRImo, atau peringatan Play Protect."
+        )
+
+        GuideItemCard(
+            icon = Icons.Default.FlashlightOn,
+            iconTint = Color(0xFFF59E0B),
+            title = "Lampu Senter Hands-Free",
+            desc = "Nyalakan atau matikan lampu senter dengan gerakan tangan saat tangan Anda sedang memegang barang atau sedang gelap."
         )
 
         GuideItemCard(
             icon = Icons.Default.Lightbulb,
             iconTint = Color(0xFF06B6D4),
             title = "Sensor Jarak Cepat (Proximity)",
-            desc = "Kibas tangan tepat di atas speaker atas layar HP untuk jeda lagu atau bangunkan layar dengan konsumsi daya minimal."
+            desc = "Kibas tangan tepat di atas speaker atas layar HP untuk jeda lagu secara instan dengan konsumsi daya sangat rendah."
         )
 
         Spacer(modifier = Modifier.height(24.dp))
@@ -172,16 +180,15 @@ private fun GuideItemCard(
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = title,
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.SemiBold,
-                    fontSize = 15.sp
+                    style = MaterialTheme.typography.titleSmall,
+                    fontWeight = FontWeight.Bold
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
                     text = desc,
-                    style = MaterialTheme.typography.bodyMedium,
+                    style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    lineHeight = 20.sp
+                    lineHeight = 18.sp
                 )
             }
         }

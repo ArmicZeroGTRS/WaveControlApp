@@ -6,7 +6,7 @@
     <uses-feature android:name="android.hardware.camera.front" android:required="false" />
     <uses-feature android:name="android.hardware.sensor.proximity" android:required="false" />
 
-    <!-- Permissions -->
+    <!-- Standard Safe Permissions (No Accessibility, No Restricted Settings, 100% Mobile Banking Safe) -->
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
@@ -14,9 +14,9 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_CAMERA" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
-    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
 
     <application
+        android:name=".WaveControlApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -40,19 +40,6 @@
             android:enabled="true"
             android:exported="false"
             android:foregroundServiceType="camera" />
-
-        <!-- Accessibility Service for Global Gestures & Scrolling -->
-        <service
-            android:name=".accessibility.WaveAccessibilityService"
-            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.accessibilityservice.AccessibilityService" />
-            </intent-filter>
-            <meta-data
-                android:name="android.accessibilityservice"
-                android:resource="@xml/wave_accessibility_service_config" />
-        </service>
 
     </application>
 

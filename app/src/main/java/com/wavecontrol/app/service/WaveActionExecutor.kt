@@ -6,12 +6,11 @@ import android.hardware.camera2.CameraManager
 import android.media.AudioManager
 import android.media.ToneGenerator
 import android.os.Build
-import android.os.CombinedVibration
 import android.os.VibrationEffect
 import android.os.Vibrator
 import android.os.VibratorManager
+import android.util.Log
 import android.view.KeyEvent
-import com.wavecontrol.app.accessibility.WaveAccessibilityService
 import com.wavecontrol.app.model.WaveAction
 import com.wavecontrol.app.model.WaveSettings
 
@@ -26,92 +25,88 @@ class WaveActionExecutor(private val context: Context) {
     init {
         try {
             toneGenerator = ToneGenerator(AudioManager.STREAM_NOTIFICATION, 75)
-        } catch (_: Exception) {
+        } catch (e: Exception) {
+            Log.w("WaveActionExecutor", "Could not initialize ToneGenerator: ${e.message}")
         }
     }
 
     fun execute(action: WaveAction, settings: WaveSettings): Boolean {
         if (action == WaveAction.NONE) return false
 
-        // Provide Haptic Feedback
-        if (settings.isVibrationEnabled) {
-            triggerVibration()
-        }
-
-        // Provide Sound Feedback
-        if (settings.isSoundFeedbackEnabled) {
-            triggerSound()
-        }
-
-        return when (action) {
-            WaveAction.MEDIA_PLAY_PAUSE -> sendMediaKeyEvent(KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE)
-            WaveAction.MEDIA_NEXT -> sendMediaKeyEvent(KeyEvent.KEYCODE_MEDIA_NEXT)
-            WaveAction.MEDIA_PREV -> sendMediaKeyEvent(KeyEvent.KEYCODE_MEDIA_PREVIOUS)
-
-            WaveAction.VOLUME_UP -> {
-                audioManager?.adjustStreamVolume(
-                    AudioManager.STREAM_MUSIC,
-                    AudioManager.ADJUST_RAISE,
-                    AudioManager.FLAG_SHOW_UI
-                )
-                true
+        try {
+            // Provide Haptic Feedback
+            if (settings.isVibrationEnabled) {
+                triggerVibration()
             }
 
-            WaveAction.VOLUME_DOWN -> {
-                audioManager?.adjustStreamVolume(
-                    AudioManager.STREAM_MUSIC,
-                    AudioManager.ADJUST_LOWER,
-                    AudioManager.FLAG_SHOW_UI
-                )
-                true
+            // Provide Sound Feedback
+            if (settings.isSoundFeedbackEnabled) {
+                triggerSound()
             }
 
-            WaveAction.SCROLL_DOWN -> {
-                WaveAccessibilityService.get()?.performScrollDown() ?: false
-            }
+            return when (action) {
+                WaveAction.MEDIA_PLAY_PAUSE -> sendMediaKeyEvent(KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE)
+                WaveAction.MEDIA_NEXT -> sendMediaKeyEvent(KeyEvent.KEYCODE_MEDIA_NEXT)
+                WaveAction.MEDIA_PREV -> sendMediaKeyEvent(KeyEvent.KEYCODE_MEDIA_PREVIOUS)
 
-            WaveAction.SCROLL_UP -> {
-                WaveAccessibilityService.get()?.performScrollUp() ?: false
-            }
+                WaveAction.VOLUME_UP -> {
+                    audioManager?.adjustStreamVolume(
+                        AudioManager.STREAM_MUSIC,
+                        AudioManager.ADJUST_RAISE,
+                        AudioManager.FLAG_SHOW_UI
+                    )
+                    true
+                }
 
-            WaveAction.GLOBAL_BACK -> {
-                WaveAccessibilityService.get()?.performBack() ?: false
-            }
+                WaveAction.VOLUME_DOWN -> {
+                    audioManager?.adjustStreamVolume(
+                        AudioManager.STREAM_MUSIC,
+                        AudioManager.ADJUST_LOWER,
+                        AudioManager.FLAG_SHOW_UI
+                    )
+                    true
+                }
 
-            WaveAction.GLOBAL_HOME -> {
-                WaveAccessibilityService.get()?.performHome() ?: false
-            }
+                WaveAction.VOLUME_MUTE -> {
+                    audioManager?.adjustStreamVolume(
+                        AudioManager.STREAM_MUSIC,
+                        AudioManager.ADJUST_TOGGLE_MUTE,
+                        AudioManager.FLAG_SHOW_UI
+                    )
+                    true
+                }
 
-            WaveAction.GLOBAL_RECENTS -> {
-                WaveAccessibilityService.get()?.performRecents() ?: false
-            }
+                WaveAction.TORCH_TOGGLE -> toggleTorch()
+                WaveAction.TORCH_ON -> setTorchState(true)
+                WaveAction.TORCH_OFF -> setTorchState(false)
 
-            WaveAction.GLOBAL_NOTIFICATIONS -> {
-                WaveAccessibilityService.get()?.performNotifications() ?: false
+                WaveAction.NONE -> false
             }
-
-            WaveAction.LOCK_SCREEN -> {
-                WaveAccessibilityService.get()?.performLockScreen() ?: false
-            }
-
-            WaveAction.TORCH_TOGGLE -> {
-                toggleTorch()
-            }
-
-            WaveAction.NONE -> false
+        } catch (e: Exception) {
+            Log.e("WaveActionExecutor", "Error executing action $action: ${e.message}", e)
+            return false
         }
     }
 
     private fun sendMediaKeyEvent(keyCode: Int): Boolean {
         val am = audioManager ?: return false
-        val down = KeyEvent(KeyEvent.ACTION_DOWN, keyCode)
-        val up = KeyEvent(KeyEvent.ACTION_UP, keyCode)
-        am.dispatchMediaKeyEvent(down)
-        am.dispatchMediaKeyEvent(up)
-        return true
+        return try {
+            val down = KeyEvent(KeyEvent.ACTION_DOWN, keyCode)
+            val up = KeyEvent(KeyEvent.ACTION_UP, keyCode)
+            am.dispatchMediaKeyEvent(down)
+            am.dispatchMediaKeyEvent(up)
+            true
+        } catch (e: Exception) {
+            Log.e("WaveActionExecutor", "Failed to dispatch media key $keyCode: ${e.message}")
+            false
+        }
     }
 
     private fun toggleTorch(): Boolean {
+        return setTorchState(!isTorchOn)
+    }
+
+    private fun setTorchState(enable: Boolean): Boolean {
         val cm = cameraManager ?: return false
         try {
             val cameraIds = cm.cameraIdList
@@ -120,13 +115,13 @@ class WaveActionExecutor(private val context: Context) {
                 val hasFlash = chars.get(CameraCharacteristics.FLASH_INFO_AVAILABLE) == true
                 val facing = chars.get(CameraCharacteristics.LENS_FACING)
                 if (hasFlash && facing == CameraCharacteristics.LENS_FACING_BACK) {
-                    isTorchOn = !isTorchOn
-                    cm.setTorchMode(id, isTorchOn)
+                    cm.setTorchMode(id, enable)
+                    isTorchOn = enable
                     return true
                 }
             }
         } catch (e: Exception) {
-            e.printStackTrace()
+            Log.e("WaveActionExecutor", "Failed to set torch mode $enable: ${e.message}")
         }
         return false
     }
@@ -157,6 +152,9 @@ class WaveActionExecutor(private val context: Context) {
 
     fun release() {
         try {
+            if (isTorchOn) {
+                setTorchState(false)
+            }
             toneGenerator?.release()
             toneGenerator = null
         } catch (_: Exception) {

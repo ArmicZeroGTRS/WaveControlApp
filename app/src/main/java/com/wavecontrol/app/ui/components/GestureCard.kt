@@ -1,6 +1,5 @@
 package com.wavecontrol.app.ui.components
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -20,7 +19,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.PlayArrow
-import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenu
@@ -51,7 +49,6 @@ fun GestureCard(
     selectedAction: WaveAction,
     onActionSelected: (WaveAction) -> Unit,
     onTestAction: (WaveAction) -> Unit,
-    isAccessibilityEnabled: Boolean,
     modifier: Modifier = Modifier
 ) {
     var expanded by remember { mutableStateOf(false) }
@@ -144,29 +141,11 @@ fun GestureCard(
                         DropdownMenuItem(
                             text = {
                                 Column {
-                                    Row(verticalAlignment = Alignment.CenterVertically) {
-                                        Text(
-                                            text = action.title,
-                                            fontWeight = if (action == selectedAction) FontWeight.Bold else FontWeight.Normal,
-                                            fontSize = 14.sp
-                                        )
-                                        if (action.requiresAccessibility) {
-                                            Spacer(modifier = Modifier.width(6.dp))
-                                            Box(
-                                                modifier = Modifier
-                                                    .clip(RoundedCornerShape(4.dp))
-                                                    .background(Color(0xFFF59E0B).copy(alpha = 0.2f))
-                                                    .padding(horizontal = 4.dp, vertical = 2.dp)
-                                            ) {
-                                                Text(
-                                                    text = "Aksesibilitas",
-                                                    fontSize = 9.sp,
-                                                    color = Color(0xFFD97706),
-                                                    fontWeight = FontWeight.Medium
-                                                )
-                                            }
-                                        }
-                                    }
+                                    Text(
+                                        text = action.title,
+                                        fontWeight = if (action == selectedAction) FontWeight.Bold else FontWeight.Normal,
+                                        fontSize = 14.sp
+                                    )
                                     Text(
                                         text = action.description,
                                         fontSize = 11.sp,
@@ -192,42 +171,19 @@ fun GestureCard(
                 }
             }
 
-            // Warning if requires accessibility and not granted
-            if (selectedAction.requiresAccessibility && !isAccessibilityEnabled) {
-                Spacer(modifier = Modifier.height(8.dp))
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clip(RoundedCornerShape(8.dp))
-                        .background(Color(0xFFFEF3C7))
-                        .padding(horizontal = 10.dp, vertical = 6.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Warning,
-                        contentDescription = null,
-                        tint = Color(0xFFD97706),
-                        modifier = Modifier.size(16.dp)
-                    )
-                    Spacer(modifier = Modifier.width(6.dp))
-                    Text(
-                        text = "Aksi ini butuh izin Layanan Aksesibilitas di Tab Beranda.",
-                        fontSize = 11.sp,
-                        color = Color(0xFF92400E)
-                    )
-                }
-            }
-
             Spacer(modifier = Modifier.height(10.dp))
 
-            // Test Action Button
+            // Bottom action test row
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.End
+                horizontalArrangement = Arrangement.End,
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 OutlinedButton(
                     onClick = { onTestAction(selectedAction) },
-                    shape = RoundedCornerShape(10.dp)
+                    shape = RoundedCornerShape(10.dp),
+                    contentPadding = androidx.compose.foundation.layout.PaddingValues(horizontal = 12.dp, vertical = 6.dp),
+                    modifier = Modifier.height(34.dp)
                 ) {
                     Icon(
                         imageVector = Icons.Default.PlayArrow,
@@ -235,7 +191,7 @@ fun GestureCard(
                         modifier = Modifier.size(16.dp)
                     )
                     Spacer(modifier = Modifier.width(4.dp))
-                    Text(text = "Coba Aksi Ini", fontSize = 12.sp)
+                    Text(text = "Uji Coba Aksi", fontSize = 12.sp)
                 }
             }
         }

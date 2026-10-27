@@ -42,7 +42,6 @@ import com.wavecontrol.app.ui.components.GestureCard
 @Composable
 fun GestureConfigScreen(
     settings: WaveSettings,
-    isAccessibilityEnabled: Boolean,
     onUpdateGestureAction: (GestureType, WaveAction) -> Unit,
     onTestAction: (WaveAction) -> Unit,
     modifier: Modifier = Modifier
@@ -68,7 +67,7 @@ fun GestureConfigScreen(
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
-                    text = "Atur tindakan untuk setiap arah lambaian tangan. Gerakan kini telah dikelompokkan secara terpisah antara sumbu Horizontal dan Vertikal.",
+                    text = "Atur tindakan untuk setiap arah lambaian tangan. Semua aksi aman 100% dan tidak memerlukan layanan aksesibilitas atau setelan terbatas.",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -90,16 +89,14 @@ fun GestureConfigScreen(
                 gesture = GestureType.WAVE_LEFT,
                 selectedAction = settings.actionWaveLeft,
                 onActionSelected = { onUpdateGestureAction(GestureType.WAVE_LEFT, it) },
-                onTestAction = onTestAction,
-                isAccessibilityEnabled = isAccessibilityEnabled
+                onTestAction = onTestAction
             )
 
             GestureCard(
                 gesture = GestureType.WAVE_RIGHT,
                 selectedAction = settings.actionWaveRight,
                 onActionSelected = { onUpdateGestureAction(GestureType.WAVE_RIGHT, it) },
-                onTestAction = onTestAction,
-                isAccessibilityEnabled = isAccessibilityEnabled
+                onTestAction = onTestAction
             )
         }
 
@@ -118,16 +115,14 @@ fun GestureConfigScreen(
                 gesture = GestureType.WAVE_UP,
                 selectedAction = settings.actionWaveUp,
                 onActionSelected = { onUpdateGestureAction(GestureType.WAVE_UP, it) },
-                onTestAction = onTestAction,
-                isAccessibilityEnabled = isAccessibilityEnabled
+                onTestAction = onTestAction
             )
 
             GestureCard(
                 gesture = GestureType.WAVE_DOWN,
                 selectedAction = settings.actionWaveDown,
                 onActionSelected = { onUpdateGestureAction(GestureType.WAVE_DOWN, it) },
-                onTestAction = onTestAction,
-                isAccessibilityEnabled = isAccessibilityEnabled
+                onTestAction = onTestAction
             )
         }
 
@@ -146,16 +141,14 @@ fun GestureConfigScreen(
                 gesture = GestureType.HAND_HOVER,
                 selectedAction = settings.actionHandHover,
                 onActionSelected = { onUpdateGestureAction(GestureType.HAND_HOVER, it) },
-                onTestAction = onTestAction,
-                isAccessibilityEnabled = isAccessibilityEnabled
+                onTestAction = onTestAction
             )
 
             GestureCard(
                 gesture = GestureType.PROXIMITY_WAVE,
                 selectedAction = settings.actionProximity,
                 onActionSelected = { onUpdateGestureAction(GestureType.PROXIMITY_WAVE, it) },
-                onTestAction = onTestAction,
-                isAccessibilityEnabled = isAccessibilityEnabled
+                onTestAction = onTestAction
             )
         }
 
@@ -169,18 +162,21 @@ private fun GestureSectionHeader(
     title: String,
     subtitle: String
 ) {
-    Row(verticalAlignment = Alignment.CenterVertically) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier.padding(horizontal = 4.dp)
+    ) {
         Box(
             modifier = Modifier
-                .size(32.dp)
+                .size(34.dp)
                 .clip(CircleShape)
-                .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.15f)),
+                .background(MaterialTheme.colorScheme.primaryContainer),
             contentAlignment = Alignment.Center
         ) {
             Icon(
                 imageVector = icon,
                 contentDescription = null,
-                tint = MaterialTheme.colorScheme.primary,
+                tint = MaterialTheme.colorScheme.onPrimaryContainer,
                 modifier = Modifier.size(18.dp)
             )
         }
@@ -188,9 +184,8 @@ private fun GestureSectionHeader(
         Column {
             Text(
                 text = title,
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold,
-                fontSize = 15.sp
+                style = MaterialTheme.typography.titleSmall,
+                fontWeight = FontWeight.Bold
             )
             Text(
                 text = subtitle,
