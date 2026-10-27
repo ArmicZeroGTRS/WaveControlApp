@@ -13,7 +13,7 @@ Aplikasi kontrol gerakan tangan (*Wave Control*) tanpa sentuh untuk Android meng
 ## 📥 Unduh APK Siap Pakai
 
 Unduh langsung versi terbaru tanpa perlu kompilasi:
-👉 **[Download WaveControl-v1.0.0.apk](https://github.com/ArmicZeroGTRS/WaveControlApp/releases/download/v1.0.0/WaveControl-v1.0.0.apk)** *(Versi 1.0.0)*
+👉 **[Download WaveControl-v1.5.0.apk](https://github.com/ArmicZeroGTRS/WaveControlApp/releases/download/v1.5.0/WaveControl-v1.5.0.apk)** *(Versi 1.5.0)*
 
 ---
 
