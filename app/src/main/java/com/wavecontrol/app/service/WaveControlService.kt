@@ -5,11 +5,14 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.app.Service
+import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.content.pm.ServiceInfo
 import android.os.Build
 import android.os.IBinder
+import android.os.PowerManager
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.lifecycle.ProcessCameraProvider
@@ -33,6 +36,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
 class WaveControlService : Service(), LifecycleOwner {
@@ -47,11 +51,29 @@ class WaveControlService : Service(), LifecycleOwner {
     private lateinit var actionExecutor: WaveActionExecutor
     private lateinit var overlayManager: FloatingOverlayManager
 
+    private var cameraProvider: ProcessCameraProvider? = null
     private var cameraDetector: CameraWaveDetector? = null
     private var proximityDetector: ProximityWaveDetector? = null
-    private var cameraExecutor = Executors.newSingleThreadExecutor()
+    private var cameraExecutor: ExecutorService? = null
 
     private var currentSettings: WaveSettings = WaveSettings()
+    private var isDetectionPaused = false
+
+    // Screen State Receiver to pause camera and sensor when screen turns off
+    private val screenStateReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            when (intent?.action) {
+                Intent.ACTION_SCREEN_OFF -> {
+                    if (currentSettings.pauseOnScreenOff) {
+                        pauseDetection("Layar Mati (Hemat Baterai)")
+                    }
+                }
+                Intent.ACTION_SCREEN_ON, Intent.ACTION_USER_PRESENT -> {
+                    resumeDetection()
+                }
+            }
+        }
+    }
 
     override fun onCreate() {
         super.onCreate()
@@ -63,22 +85,48 @@ class WaveControlService : Service(), LifecycleOwner {
 
         actionExecutor = WaveActionExecutor(this)
         overlayManager = FloatingOverlayManager(this)
+        cameraExecutor = Executors.newSingleThreadExecutor()
 
         createNotificationChannel()
+
+        // Register screen state receiver
+        val screenFilter = IntentFilter().apply {
+            addAction(Intent.ACTION_SCREEN_OFF)
+            addAction(Intent.ACTION_SCREEN_ON)
+            addAction(Intent.ACTION_USER_PRESENT)
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            registerReceiver(screenStateReceiver, screenFilter, RECEIVER_NOT_EXPORTED)
+        } else {
+            registerReceiver(screenStateReceiver, screenFilter)
+        }
 
         // Listen for settings changes
         settingsRepository.settingsFlow
             .onEach { settings ->
                 val prev = currentSettings
                 currentSettings = settings
-                cameraDetector?.updateConfig(settings.sensitivity, settings.cooldownMs)
+                cameraDetector?.updateConfig(
+                    sensitivity = settings.sensitivity,
+                    cooldownMs = settings.cooldownMs,
+                    invertHorizontal = settings.invertHorizontal,
+                    invertVertical = settings.invertVertical
+                )
                 proximityDetector?.updateCooldown(settings.cooldownMs)
 
                 if (prev.isProximityWaveEnabled != settings.isProximityWaveEnabled) {
-                    if (settings.isProximityWaveEnabled) {
+                    if (settings.isProximityWaveEnabled && !isDetectionPaused) {
                         proximityDetector?.start()
                     } else {
                         proximityDetector?.stop()
+                    }
+                }
+
+                if (prev.isCameraWaveEnabled != settings.isCameraWaveEnabled) {
+                    if (settings.isCameraWaveEnabled && !isDetectionPaused) {
+                        bindCameraUseCases()
+                    } else {
+                        cameraProvider?.unbindAll()
                     }
                 }
 
@@ -93,7 +141,16 @@ class WaveControlService : Service(), LifecycleOwner {
         lifecycleRegistry.currentState = Lifecycle.State.STARTED
         lifecycleRegistry.currentState = Lifecycle.State.RESUMED
 
-        setupDetectors()
+        // Check initial screen state
+        val powerManager = getSystemService(Context.POWER_SERVICE) as? PowerManager
+        val isScreenOn = powerManager?.isInteractive ?: true
+
+        if (isScreenOn || !currentSettings.pauseOnScreenOff) {
+            setupDetectors()
+        } else {
+            isDetectionPaused = true
+            updateNotification("Wave Control Dijeda", "Deteksi dihentikan sementara (Layar Mati)")
+        }
     }
 
     private fun setupDetectors() {
@@ -105,12 +162,12 @@ class WaveControlService : Service(), LifecycleOwner {
                 handleGesture(event)
             }
         )
-        if (currentSettings.isProximityWaveEnabled) {
+        if (currentSettings.isProximityWaveEnabled && !isDetectionPaused) {
             proximityDetector?.start()
         }
 
         // Camera detector
-        if (currentSettings.isCameraWaveEnabled) {
+        if (currentSettings.isCameraWaveEnabled && !isDetectionPaused) {
             setupCameraDetection()
         }
     }
@@ -119,43 +176,83 @@ class WaveControlService : Service(), LifecycleOwner {
         val cameraProviderFuture = ProcessCameraProvider.getInstance(this)
         cameraProviderFuture.addListener({
             try {
-                val cameraProvider = cameraProviderFuture.get()
-
-                cameraDetector = CameraWaveDetector(
-                    sensitivity = currentSettings.sensitivity,
-                    cooldownMs = currentSettings.cooldownMs,
-                    onGestureDetected = { event ->
-                        handleGesture(event)
-                    },
-                    onLiveMotion = { energy, vx, vy ->
-                        _liveMotionFlow.tryEmit(Triple(energy, vx, vy))
-                    }
-                )
-
-                val imageAnalysis = ImageAnalysis.Builder()
-                    .setOutputImageFormat(ImageAnalysis.OUTPUT_IMAGE_FORMAT_YUV_420_888)
-                    .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
-                    .build()
-
-                imageAnalysis.setAnalyzer(cameraExecutor, cameraDetector!!)
-
-                val cameraSelector = CameraSelector.DEFAULT_FRONT_CAMERA
-
-                cameraProvider.unbindAll()
-                cameraProvider.bindToLifecycle(
-                    this,
-                    cameraSelector,
-                    imageAnalysis
-                )
-
+                cameraProvider = cameraProviderFuture.get()
+                if (!isDetectionPaused && currentSettings.isCameraWaveEnabled) {
+                    bindCameraUseCases()
+                }
             } catch (e: Exception) {
                 e.printStackTrace()
             }
         }, ContextCompat.getMainExecutor(this))
     }
 
+    private fun bindCameraUseCases() {
+        val provider = cameraProvider ?: return
+        val executor = cameraExecutor ?: return
+        try {
+            cameraDetector = CameraWaveDetector(
+                sensitivity = currentSettings.sensitivity,
+                cooldownMs = currentSettings.cooldownMs,
+                invertHorizontal = currentSettings.invertHorizontal,
+                invertVertical = currentSettings.invertVertical,
+                onGestureDetected = { event ->
+                    handleGesture(event)
+                },
+                onLiveMotion = { energy, vx, vy ->
+                    _liveMotionFlow.tryEmit(Triple(energy, vx, vy))
+                }
+            )
+
+            val imageAnalysis = ImageAnalysis.Builder()
+                .setOutputImageFormat(ImageAnalysis.OUTPUT_IMAGE_FORMAT_YUV_420_888)
+                .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
+                .build()
+
+            imageAnalysis.setAnalyzer(executor, cameraDetector!!)
+
+            val cameraSelector = CameraSelector.DEFAULT_FRONT_CAMERA
+
+            provider.unbindAll()
+            provider.bindToLifecycle(
+                this,
+                cameraSelector,
+                imageAnalysis
+            )
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    private fun pauseDetection(reason: String) {
+        if (isDetectionPaused) return
+        isDetectionPaused = true
+        try {
+            cameraProvider?.unbindAll()
+            proximityDetector?.stop()
+            updateNotification("Wave Control Dijeda", "Sensor nonaktif ($reason)")
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    private fun resumeDetection() {
+        if (!isDetectionPaused || !currentSettings.isEnabled) return
+        isDetectionPaused = false
+        try {
+            if (currentSettings.isCameraWaveEnabled) {
+                bindCameraUseCases()
+            }
+            if (currentSettings.isProximityWaveEnabled) {
+                proximityDetector?.start()
+            }
+            updateNotification("Wave Control Berjalan", "Mendeteksi gerakan tangan dan sensor jarak...")
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
     private fun handleGesture(event: DetectionEvent) {
-        if (!currentSettings.isEnabled) return
+        if (!currentSettings.isEnabled || isDetectionPaused) return
 
         val action = currentSettings.getActionForGesture(event.gesture)
 
@@ -183,6 +280,16 @@ class WaveControlService : Service(), LifecycleOwner {
             startForeground(NOTIFICATION_ID, notification, fgsType)
         } else {
             startForeground(NOTIFICATION_ID, notification)
+        }
+    }
+
+    private fun updateNotification(title: String, text: String) {
+        try {
+            val notification = buildNotification(title, text)
+            val manager = getSystemService(NotificationManager::class.java)
+            manager?.notify(NOTIFICATION_ID, notification)
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
     }
 
@@ -246,10 +353,21 @@ class WaveControlService : Service(), LifecycleOwner {
 
     override fun onDestroy() {
         lifecycleRegistry.currentState = Lifecycle.State.DESTROYED
+        try {
+            unregisterReceiver(screenStateReceiver)
+        } catch (_: Exception) {}
+
+        try {
+            cameraProvider?.unbindAll()
+        } catch (_: Exception) {}
+
         proximityDetector?.stop()
         actionExecutor.release()
         overlayManager.removeOverlay()
-        cameraExecutor.shutdown()
+
+        cameraExecutor?.shutdown()
+        cameraExecutor = null
+
         serviceJob.cancel()
         instance = null
         super.onDestroy()

@@ -9,7 +9,7 @@ import com.wavecontrol.app.model.GestureType
 
 class ProximityWaveDetector(
     context: Context,
-    private var cooldownMs: Long = 800L,
+    private var cooldownMs: Long = 750L,
     private val onGestureDetected: (DetectionEvent) -> Unit
 ) : SensorEventListener {
 
@@ -32,6 +32,8 @@ class ProximityWaveDetector(
         if (isListening || proximitySensor == null) return
         sensorManager?.registerListener(this, proximitySensor, SensorManager.SENSOR_DELAY_UI)
         isListening = true
+        isNear = false
+        nearStartTime = 0L
     }
 
     fun stop() {
@@ -49,20 +51,25 @@ class ProximityWaveDetector(
         val maxRange = event.sensor.maximumRange
         val now = System.currentTimeMillis()
 
-        // Threshold for near: usually < 5cm or < maxRange
-        val currentlyNear = distance < maxRange.coerceAtMost(5f)
+        // Robust near check for binary (0/1) or analog distance
+        val currentlyNear = if (maxRange <= 1.0f) {
+            distance < 0.5f
+        } else {
+            distance < 4.0f && distance < maxRange
+        }
 
         if (currentlyNear && !isNear) {
-            // Hand approached
+            // Hand enters proximity field
             isNear = true
             nearStartTime = now
         } else if (!currentlyNear && isNear) {
-            // Hand moved away (wave completed)
+            // Hand exits proximity field
             isNear = false
             val duration = now - nearStartTime
 
-            // Quick wave: between 60ms and 700ms
-            if (duration in 60L..700L && (now - lastTriggerTime >= cooldownMs)) {
+            // A deliberate quick wave across sensor takes 50ms - 600ms
+            // If held longer (> 700ms), it is an obstruction / pocket, so reject!
+            if (duration in 50L..600L && (now - lastTriggerTime >= cooldownMs)) {
                 lastTriggerTime = now
                 onGestureDetected(
                     DetectionEvent(

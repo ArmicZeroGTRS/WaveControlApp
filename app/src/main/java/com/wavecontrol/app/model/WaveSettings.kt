@@ -8,8 +8,11 @@ data class WaveSettings(
     val isVibrationEnabled: Boolean = true,
     val isSoundFeedbackEnabled: Boolean = true,
     val isLowPowerMode: Boolean = false,
-    val sensitivity: Float = 0.5f, // 0.2f (less sensitive) to 0.9f (more sensitive)
-    val cooldownMs: Long = 800L,   // 500ms to 2000ms
+    val pauseOnScreenOff: Boolean = true, // Auto-pause detection when screen is off to preserve battery
+    val invertHorizontal: Boolean = false, // Swap Left <-> Right if user prefers
+    val invertVertical: Boolean = false,   // Swap Up <-> Down if user prefers
+    val sensitivity: Float = 0.55f,        // 0.1f (less sensitive) to 0.95f (more sensitive)
+    val cooldownMs: Long = 750L,          // 400ms to 2000ms
 
     // Gesture Mapping
     val actionWaveLeft: WaveAction = WaveAction.MEDIA_PREV,

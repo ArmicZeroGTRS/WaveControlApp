@@ -1,6 +1,5 @@
 package com.wavecontrol.app.ui.screens
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -22,7 +21,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -124,6 +122,40 @@ fun SettingsScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
+        // Power & Battery Management Card
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(20.dp),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+            elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        ) {
+            Column(modifier = Modifier.padding(18.dp)) {
+                Text(
+                    text = "Manajemen Daya & Ketahanan Baterai",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold
+                )
+
+                Spacer(modifier = Modifier.height(14.dp))
+
+                SettingSwitchRow(
+                    title = "Jeda Saat Layar Mati (Screen Off)",
+                    subtitle = "Otomatis matikan kamera dan sensor saat HP terkunci/layar mati untuk hemat baterai total",
+                    checked = settings.pauseOnScreenOff,
+                    onCheckedChange = { onUpdateSettings { s -> s.copy(pauseOnScreenOff = it) } }
+                )
+
+                SettingSwitchRow(
+                    title = "Mode Hemat Daya",
+                    subtitle = "Mengoptimalkan proses frame di latar belakang",
+                    checked = settings.isLowPowerMode,
+                    onCheckedChange = { onUpdateSettings { s -> s.copy(isLowPowerMode = it) } }
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
         // Features & Feedback Toggles Card
         Card(
             modifier = Modifier.fillMaxWidth(),
@@ -133,7 +165,7 @@ fun SettingsScreen(
         ) {
             Column(modifier = Modifier.padding(18.dp)) {
                 Text(
-                    text = "Preferensi Fitur & Umpan Balik",
+                    text = "Preferensi Fitur & Sensor",
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold
                 )
@@ -142,28 +174,28 @@ fun SettingsScreen(
 
                 SettingSwitchRow(
                     title = "Gunakan Kamera Depan",
-                    subtitle = "Mendeteksi arah sapuan tangan (Kiri/Kanan/Atas/Bawah)",
+                    subtitle = "Mendeteksi sapuan tangan (Kiri, Kanan, Atas, Bawah)",
                     checked = settings.isCameraWaveEnabled,
                     onCheckedChange = { onUpdateSettings { s -> s.copy(isCameraWaveEnabled = it) } }
                 )
 
                 SettingSwitchRow(
                     title = "Gunakan Sensor Jarak (Proximity)",
-                    subtitle = "Mendeteksi kibasan cepat di depan layar HP",
+                    subtitle = "Mendeteksi kibasan kilat di depan layar HP",
                     checked = settings.isProximityWaveEnabled,
                     onCheckedChange = { onUpdateSettings { s -> s.copy(isProximityWaveEnabled = it) } }
                 )
 
                 SettingSwitchRow(
                     title = "Badge / HUD Mengambang",
-                    subtitle = "Tampilkan ikon gerakan melayang di atas aplikasi lain",
+                    subtitle = "Tampilkan indikator gerakan melayang di atas aplikasi lain",
                     checked = settings.isFloatingHudEnabled,
                     onCheckedChange = { onUpdateSettings { s -> s.copy(isFloatingHudEnabled = it) } }
                 )
 
                 SettingSwitchRow(
                     title = "Getaran Haptic Feedback",
-                    subtitle = "Getar singkat saat gerakan tangan berhasil dikenali",
+                    subtitle = "Getar singkat saat gerakan tangan dikenali",
                     checked = settings.isVibrationEnabled,
                     onCheckedChange = { onUpdateSettings { s -> s.copy(isVibrationEnabled = it) } }
                 )
@@ -174,12 +206,39 @@ fun SettingsScreen(
                     checked = settings.isSoundFeedbackEnabled,
                     onCheckedChange = { onUpdateSettings { s -> s.copy(isSoundFeedbackEnabled = it) } }
                 )
+            }
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Advanced Axis Calibration Card
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(20.dp),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+            elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        ) {
+            Column(modifier = Modifier.padding(18.dp)) {
+                Text(
+                    text = "Kalibrasi Sumbu Lanjutan (Opsional)",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold
+                )
+
+                Spacer(modifier = Modifier.height(14.dp))
 
                 SettingSwitchRow(
-                    title = "Mode Hemat Daya",
-                    subtitle = "Mengoptimalkan konsumsi baterai di latar belakang",
-                    checked = settings.isLowPowerMode,
-                    onCheckedChange = { onUpdateSettings { s -> s.copy(isLowPowerMode = it) } }
+                    title = "Balikkan Arah Horizontal",
+                    subtitle = "Tukar arah Kiri ⟷ Kanan jika orientasi kamera terbalik",
+                    checked = settings.invertHorizontal,
+                    onCheckedChange = { onUpdateSettings { s -> s.copy(invertHorizontal = it) } }
+                )
+
+                SettingSwitchRow(
+                    title = "Balikkan Arah Vertikal",
+                    subtitle = "Tukar arah Atas ⟷ Bawah jika orientasi kamera terbalik",
+                    checked = settings.invertVertical,
+                    onCheckedChange = { onUpdateSettings { s -> s.copy(invertVertical = it) } }
                 )
             }
         }

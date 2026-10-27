@@ -25,8 +25,11 @@ class WaveSettingsRepository(context: Context) {
             isVibrationEnabled = prefs.getBoolean(KEY_IS_VIBRATION_ENABLED, true),
             isSoundFeedbackEnabled = prefs.getBoolean(KEY_IS_SOUND_ENABLED, true),
             isLowPowerMode = prefs.getBoolean(KEY_IS_LOW_POWER_MODE, false),
-            sensitivity = prefs.getFloat(KEY_SENSITIVITY, 0.5f),
-            cooldownMs = prefs.getLong(KEY_COOLDOWN_MS, 800L),
+            pauseOnScreenOff = prefs.getBoolean(KEY_PAUSE_ON_SCREEN_OFF, true),
+            invertHorizontal = prefs.getBoolean(KEY_INVERT_HORIZONTAL, false),
+            invertVertical = prefs.getBoolean(KEY_INVERT_VERTICAL, false),
+            sensitivity = prefs.getFloat(KEY_SENSITIVITY, 0.55f),
+            cooldownMs = prefs.getLong(KEY_COOLDOWN_MS, 750L),
             actionWaveLeft = getAction(KEY_ACTION_WAVE_LEFT, WaveAction.MEDIA_PREV),
             actionWaveRight = getAction(KEY_ACTION_WAVE_RIGHT, WaveAction.MEDIA_NEXT),
             actionWaveUp = getAction(KEY_ACTION_WAVE_UP, WaveAction.VOLUME_UP),
@@ -51,6 +54,9 @@ class WaveSettingsRepository(context: Context) {
             .putBoolean(KEY_IS_VIBRATION_ENABLED, s.isVibrationEnabled)
             .putBoolean(KEY_IS_SOUND_ENABLED, s.isSoundFeedbackEnabled)
             .putBoolean(KEY_IS_LOW_POWER_MODE, s.isLowPowerMode)
+            .putBoolean(KEY_PAUSE_ON_SCREEN_OFF, s.pauseOnScreenOff)
+            .putBoolean(KEY_INVERT_HORIZONTAL, s.invertHorizontal)
+            .putBoolean(KEY_INVERT_VERTICAL, s.invertVertical)
             .putFloat(KEY_SENSITIVITY, s.sensitivity)
             .putLong(KEY_COOLDOWN_MS, s.cooldownMs)
             .putString(KEY_ACTION_WAVE_LEFT, s.actionWaveLeft.name)
@@ -80,6 +86,9 @@ class WaveSettingsRepository(context: Context) {
         private const val KEY_IS_VIBRATION_ENABLED = "is_vibration_enabled"
         private const val KEY_IS_SOUND_ENABLED = "is_sound_enabled"
         private const val KEY_IS_LOW_POWER_MODE = "is_low_power_mode"
+        private const val KEY_PAUSE_ON_SCREEN_OFF = "pause_on_screen_off"
+        private const val KEY_INVERT_HORIZONTAL = "invert_horizontal"
+        private const val KEY_INVERT_VERTICAL = "invert_vertical"
         private const val KEY_SENSITIVITY = "sensitivity"
         private const val KEY_COOLDOWN_MS = "cooldown_ms"
         private const val KEY_ACTION_WAVE_LEFT = "action_wave_left"
