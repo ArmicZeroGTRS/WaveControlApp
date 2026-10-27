@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/><meta content="mobile_tab" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600;700&amp;family=Space+Grotesk:wght@500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{width:100vw;margin:0;padding:0;}body{overscroll-behavior:none;}.pb-safe{padding-bottom:env(safe-area-inset-bottom,0px);}.pt-safe{padding-top:env(safe-area-inset-top,0px);}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { "colors": { "tertiary-fixed": "#eaddff", "outline-variant": "#3b494b", "on-primary-container": "#006970", "background": "#0b1326", "surface-container-highest": "#2d3449", "on-surface-variant": "#b9cacb", "on-tertiary-fixed-variant": "#5a00c6", "secondary": "#6bd8cb", "surface-container-high": "#222a3d", "on-tertiary": "#3f008e", "primary-fixed": "#7df4ff", "primary-fixed-dim": "#00dbe9", "tertiary": "#fbf3ff", "error": "#ffb4ab", "surface-container": "#171f33", "outline": "#849495", "on-secondary-fixed-variant": "#005049", "primary": "#dbfcff", "on-secondary-container": "#00302b", "on-error": "#690005", "inverse-primary": "#006970", "surface-tint": "#00dbe9", "surface-container-lowest": "#060e20", "on-surface": "#dae2fd", "secondary-fixed-dim": "#6bd8cb", "surface": "#0b1326", "inverse-on-surface": "#283044", "tertiary-container": "#e3d2ff", "surface-container-low": "#131b2e", "error-container": "#93000a", "tertiary-fixed-dim": "#d2bbff", "secondary-fixed": "#89f5e7", "primary-container": "#00f0ff", "on-error-container": "#ffdad6", "inverse-surface": "#dae2fd", "on-secondary-fixed": "#00201d", "on-secondary": "#003732", "on-primary": "#00363a", "on-primary-fixed": "#002022", "on-background": "#dae2fd", "surface-dim": "#0b1326", "on-tertiary-container": "#742fe5", "surface-bright": "#31394d", "surface-variant": "#2d3449", "on-primary-fixed-variant": "#004f54", "secondary-container": "#29a195", "on-tertiary-fixed": "#25005a" }, "borderRadius": { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, "spacing": { "gutter": "1rem", "gutter-tablet": "1.5rem", "space-sm": "0.5rem", "margin": "1rem", "space-xs": "0.25rem", "space-md": "0.75rem", "margin-tablet": "2rem", "space-lg": "1rem", "space-xl": "1.5rem" }, "fontFamily": { "display-lg": [ "Space Grotesk" ], "label-md": [ "JetBrains Mono" ], "title-md": [ "Inter" ], "body-lg": [ "Inter" ], "headline-lg": [ "Space Grotesk" ], "label-sm": [ "JetBrains Mono" ], "display-lg-mobile": [ "Space Grotesk" ], "headline-md": [ "Space Grotesk" ], "body-md": [ "Inter" ] }, "fontSize": { "display-lg": [ "32px", { "lineHeight": "38px", "fontWeight": "700" } ], "label-md": [ "12px", { "lineHeight": "16px", "fontWeight": "600" } ], "title-md": [ "16px", { "lineHeight": "22px", "fontWeight": "500" } ], "body-lg": [ "15px", { "lineHeight": "22px", "fontWeight": "400" } ], "headline-lg": [ "22px", { "lineHeight": "28px", "fontWeight": "600" } ], "label-sm": [ "10px", { "lineHeight": "14px", "fontWeight": "500" } ], "display-lg-mobile": [ "26px", { "lineHeight": "32px", "fontWeight": "700" } ], "headline-md": [ "18px", { "lineHeight": "24px", "fontWeight": "600" } ], "body-md": [ "14px", { "lineHeight": "20px", "fontWeight": "400" } ] } } } }</script><style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head><body class="bg-surface font-body-md text-on-surface antialiased"><header class="fixed top-0 w-full z-50 pt-safe bg-surface-container-lowest/80 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.4)]"><div class="h-20 px-margin flex items-center justify-between"><div class="flex flex-col gap-space-xs"><div class="flex items-center gap-space-sm"><div class="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-surface-container-high"><span class="w-1.5 h-1.5 rounded-full bg-secondary shadow-[0_0_8px_#6bd8cb] animate-pulse"></span><span class="font-label-sm text-label-sm text-secondary uppercase tracking-wider">Engine Active</span></div><div class="flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-surface-container-high/60"><span class="material-symbols-outlined text-secondary text-[12px]">videocam</span><span class="font-label-sm text-label-sm text-on-surface-variant">60 FPS</span></div><div class="flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-surface-container-high/60"><span class="material-symbols-outlined text-secondary text-[12px]">accessibility_new</span><span class="font-label-sm text-label-sm text-on-surface-variant">SYNC</span></div></div><h1 class="font-headline-md text-headline-md text-primary font-semibold tracking-tight uppercase">Dashboard</h1></div><div class="flex items-center gap-space-sm"><button aria-label="Notifications" class="w-11 h-11 rounded-full bg-surface-container flex items-center justify-center text-on-surface-variant hover:text-primary transition-colors"><span class="material-symbols-outlined text-[20px]">tune</span></button><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="flex flex-col relative w-full pt-20 pb-24 bg-surface min-h-screen"><div class="flex flex-col w-full px-margin pb-space-xl gap-space-lg">
+<!-- Ephemeral Mini Toast Overlay (Micro-delight triggered on gesture/toggle) -->
+<div class="w-full flex items-center justify-between p-space-md rounded-xl bg-surface-container-high shadow-lg transition-all duration-300 opacity-100" id="gesture-toast">
+<div class="flex items-center gap-space-sm min-w-0">
+<div class="w-8 h-8 rounded-full bg-secondary/15 flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-secondary text-[18px]">swipe_right</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-label-sm text-label-sm text-secondary uppercase tracking-wider">Spatial Pipeline Triggered</span>
+<span class="font-body-md text-body-md text-on-surface truncate">Wave Right detected • Sent to Spotify</span>
+</div>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant shrink-0 bg-surface-container-highest px-2 py-0.5 rounded-full">Just Now</span>
+</div>
+<!-- Central Interactive Wave Visualizer Hero -->
+<div class="relative w-full aspect-[4/3] rounded-xl bg-surface-container-lowest flex flex-col items-center justify-between p-space-md overflow-hidden shadow-2xl">
+<!-- Ambient Radial Field Glows -->
+<div class="absolute inset-0 bg-gradient-to-b from-primary-container/10 via-transparent to-surface-container-low/80 pointer-events-none"></div>
+<div class="absolute w-72 h-72 rounded-full bg-primary-container/5 blur-3xl pointer-events-none animate-pulse"></div>
+<!-- Top Telemetry Row inside Radar Viewport -->
+<div class="relative z-10 w-full flex items-center justify-between">
+<div class="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-surface-container-high/90 shadow-sm">
+<span class="w-2 h-2 rounded-full bg-secondary shadow-[0_0_8px_#6bd8cb] animate-ping"></span>
+<span class="font-label-sm text-label-sm text-secondary font-medium tracking-tight">CAMERA LOCK</span>
+</div>
+<div class="flex items-center gap-1 px-2.5 py-1 rounded-full bg-surface-container-high/80">
+<span class="material-symbols-outlined text-primary text-[14px]">bolt</span>
+<span class="font-label-sm text-label-sm text-primary tracking-tight">14ms LATENCY</span>
+</div>
+</div>
+<!-- Concentric Interactive Radar Wave Graphic -->
+<div class="relative z-10 flex items-center justify-center w-full my-auto cursor-pointer" id="radar-trigger">
+<!-- Expanding Vector Wave Rings -->
+<div class="absolute w-56 h-56 rounded-full bg-primary-container/5 animate-ping" style="animation-duration: 3.5s;"></div>
+<div class="absolute w-44 h-44 rounded-full bg-secondary/10 animate-pulse"></div>
+<div class="absolute w-32 h-32 rounded-full bg-surface-container-high flex items-center justify-center shadow-[0_0_24px_rgba(0,240,255,0.25)]">
+<div class="w-20 h-20 rounded-full bg-surface-container-highest flex items-center justify-center">
+<span class="material-symbols-outlined text-primary-container text-[36px] transition-transform duration-300" id="radar-hand-icon">front_hand</span>
+</div>
+</div>
+<!-- Directional Target Quadrants (Vector Indicators) -->
+<div class="absolute -top-3 px-2 py-0.5 rounded bg-surface-container-highest font-label-sm text-label-sm text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-[10px]">arrow_upward</span> SCROLL UP
+      </div>
+<div class="absolute -bottom-3 px-2 py-0.5 rounded bg-surface-container-highest font-label-sm text-label-sm text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-[10px]">arrow_downward</span> SCROLL DOWN
+      </div>
+<div class="absolute -left-1 px-1.5 py-0.5 rounded bg-surface-container-highest font-label-sm text-label-sm text-on-surface-variant flex items-center gap-0.5">
+<span class="material-symbols-outlined text-[10px]">arrow_back</span> PREV
+      </div>
+<div class="absolute -right-1 px-1.5 py-0.5 rounded bg-surface-container-highest font-label-sm text-label-sm text-primary font-bold flex items-center gap-0.5 shadow-sm">
+        NEXT <span class="material-symbols-outlined text-[10px]">arrow_forward</span>
+</div>
+</div>
+<!-- Hand Proximity Status Bar -->
+<div class="relative z-10 w-full flex items-center justify-between bg-surface-container-low/90 backdrop-blur-md px-3 py-1.5 rounded-lg shadow-inner">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-secondary text-[14px]">sensors</span>
+<span class="font-label-sm text-label-sm text-on-surface">Proximity Armed • Optimal Range: 15-35cm</span>
+</div>
+<span class="font-label-sm text-label-sm text-secondary font-semibold">98% CONF</span>
+</div>
+</div>
+<!-- Primary Engine Start/Pause Command Pill -->
+<button class="w-full h-14 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center gap-space-sm font-headline-md text-headline-md font-bold uppercase tracking-wider shadow-[0_0_24px_rgba(0,240,255,0.35)] active:scale-[0.98] transition-all" id="toggle-engine-btn">
+<span class="material-symbols-outlined text-[24px]" id="engine-btn-icon">pause_circle</span>
+<span id="engine-btn-text">PAUSE ENGINE</span>
+</button>
+<!-- Live Telemetry & Spatial Diagnostics Grid -->
+<div class="flex flex-col gap-space-xs">
+<div class="flex items-center justify-between px-1">
+<h2 class="font-headline-md text-headline-md text-on-surface font-semibold tracking-tight">Active Telemetry</h2>
+<span class="font-label-sm text-label-sm text-secondary uppercase tracking-widest">REAL-TIME BUS</span>
+</div>
+<div class="flex flex-col gap-space-sm">
+<!-- Last Gesture Broadcast Card -->
+<div class="p-space-md rounded-xl bg-surface-container flex items-center justify-between shadow-md">
+<div class="flex items-center gap-space-md min-w-0">
+<div class="w-11 h-11 rounded-full bg-surface-container-high flex items-center justify-center text-primary-container shrink-0">
+<span class="material-symbols-outlined text-[22px]">music_note</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Last Recognized Gesture</span>
+<div class="flex items-center gap-1.5 min-w-0">
+<span class="font-title-md text-title-md text-primary font-semibold truncate">Wave Right</span>
+<span class="font-body-md text-body-md text-on-surface-variant">→</span>
+<span class="font-body-md text-body-md text-on-surface truncate">Next Track</span>
+</div>
+<span class="font-label-sm text-label-sm text-secondary">Target: Spotify v8.9.2</span>
+</div>
+</div>
+<div class="flex flex-col items-end shrink-0 pl-2">
+<span class="font-label-sm text-label-sm text-on-surface-variant">00:03s ago</span>
+<span class="font-label-sm text-label-sm text-secondary font-medium">Auto-executed</span>
+</div>
+</div>
+<!-- Sensor Pipeline Card -->
+<div class="p-space-md rounded-xl bg-surface-container flex items-center justify-between shadow-md">
+<div class="flex items-center gap-space-md min-w-0">
+<div class="w-11 h-11 rounded-full bg-surface-container-high flex items-center justify-center text-secondary shrink-0">
+<span class="material-symbols-outlined text-[22px]">videocam</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Sensor Fusion Array</span>
+<span class="font-title-md text-title-md text-on-surface font-medium truncate">Front RGB Camera + IR Proximity</span>
+<div class="flex items-center gap-2 mt-0.5">
+<span class="font-label-sm text-label-sm text-primary px-1.5 py-0.5 rounded bg-surface-container-high">60 FPS Native</span>
+<span class="font-label-sm text-label-sm text-secondary px-1.5 py-0.5 rounded bg-surface-container-high">Infrared Armed</span>
+</div>
+</div>
+</div>
+<div class="w-3 h-3 rounded-full bg-secondary shadow-[0_0_10px_#6bd8cb] shrink-0"></div>
+</div>
+<!-- Accessibility Service Health Card -->
+<div class="p-space-md rounded-xl bg-surface-container flex items-center justify-between shadow-md">
+<div class="flex items-center gap-space-md min-w-0">
+<div class="w-11 h-11 rounded-full bg-surface-container-high flex items-center justify-center text-primary shrink-0">
+<span class="material-symbols-outlined text-[22px]">accessibility_new</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Android OS Hook</span>
+<span class="font-title-md text-title-md text-on-surface font-medium truncate">Accessibility Node Attached</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Zero-touch virtual dispatch enabled</span>
+</div>
+</div>
+<div class="flex items-center gap-1 px-2.5 py-1 rounded-full bg-secondary/15 shrink-0">
+<span class="material-symbols-outlined text-secondary text-[14px]">verified</span>
+<span class="font-label-sm text-label-sm text-secondary font-medium uppercase">Active</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Operational Context Card (Visual Asset Pipeline representation of in-car/desk motion trigger) -->
+<div class="w-full rounded-xl bg-surface-container-low overflow-hidden shadow-lg flex flex-col">
+<div class="relative w-full h-36 bg-cover bg-center" data-alt="Futuristic glowing dashboard inside a nighttime electric vehicle with a subtle hand silhouette interacting with a glowing cyan spatial interface HUD in mid-air, bathed in midnight obsidian tones and electric neon cyan lighting reflections." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBZeJLW2ak9ipnhtpPFfyXRZBDGsktl_xoF5WmsKeS9AQYAk8zd22ZF-h5mA3cG4WFNCAXlPsP2iUjN8_zy8mCHfCgkR2NXknag-cyPG6aG1Br9A1qfKLG1CvuZ2x7MQ4DD0Nco5ltscf3rCfH-LZPgBGu18FjaBTiIuLNpMb7lCEL5czO9baJOBnaOC224USa0rgOV-DaJ-FmBmNR1RStO1k787trjkwl_ibXShiA_nNZQ8ovUbA1JhQ')">
+<div class="absolute inset-0 bg-gradient-to-t from-surface-container-low via-surface-container-low/40 to-transparent"></div>
+<div class="absolute top-space-md left-space-md flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-surface-container-lowest/80 backdrop-blur-md">
+<span class="material-symbols-outlined text-primary text-[12px]">directions_car</span>
+<span class="font-label-sm text-label-sm text-primary uppercase tracking-wide">In-Vehicle &amp; Desk Profile</span>
+</div>
+<div class="absolute bottom-space-sm left-space-md right-space-md flex items-center justify-between">
+<div class="flex flex-col">
+<span class="font-title-md text-title-md text-primary font-semibold">Touchless Drive Guard</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Auto-switches to high-contrast spatial gestures</span>
+</div>
+<div class="w-8 h-8 rounded-full bg-surface-container flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined text-[18px]">verified_user</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Quick Action Triggers & Modifiers Section -->
+<div class="flex flex-col gap-space-xs">
+<div class="flex items-center justify-between px-1">
+<h2 class="font-headline-md text-headline-md text-on-surface font-semibold tracking-tight">Active Gesture Triggers</h2>
+<span class="font-label-sm text-label-sm text-on-surface-variant">4 BOUND</span>
+</div>
+<!-- Quick Cards Grid -->
+<div class="grid grid-cols-2 gap-space-sm">
+<!-- Card 1: Media Control -->
+<div class="p-space-md rounded-xl bg-surface-container flex flex-col justify-between gap-space-md shadow-md">
+<div class="flex items-center justify-between">
+<div class="w-9 h-9 rounded-lg bg-surface-container-high flex items-center justify-center text-primary-container">
+<span class="material-symbols-outlined text-[20px]">play_pause</span>
+</div>
+<button class="toggle-switch w-11 h-6 rounded-full bg-secondary-container flex items-center px-0.5 transition-colors" data-active="true">
+<div class="w-5 h-5 rounded-full bg-surface shadow-md transform translate-x-5 transition-transform"></div>
+</button>
+</div>
+<div class="flex flex-col">
+<span class="font-title-md text-title-md text-on-surface font-medium leading-tight">Media Master</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant mt-0.5">Wave L/R • Hover Pause</span>
+</div>
+</div>
+<!-- Card 2: Volume Master -->
+<div class="p-space-md rounded-xl bg-surface-container flex flex-col justify-between gap-space-md shadow-md">
+<div class="flex items-center justify-between">
+<div class="w-9 h-9 rounded-lg bg-surface-container-high flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined text-[20px]">volume_up</span>
+</div>
+<button class="toggle-switch w-11 h-6 rounded-full bg-secondary-container flex items-center px-0.5 transition-colors" data-active="true">
+<div class="w-5 h-5 rounded-full bg-surface shadow-md transform translate-x-5 transition-transform"></div>
+</button>
+</div>
+<div class="flex flex-col">
+<span class="font-title-md text-title-md text-on-surface font-medium leading-tight">Air Volume</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant mt-0.5">Circle CW/CCW</span>
+</div>
+</div>
+<!-- Card 3: Smart Scroll -->
+<div class="p-space-md rounded-xl bg-surface-container flex flex-col justify-between gap-space-md shadow-md">
+<div class="flex items-center justify-between">
+<div class="w-9 h-9 rounded-lg bg-surface-container-high flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[20px]">swap_vert</span>
+</div>
+<button class="toggle-switch w-11 h-6 rounded-full bg-surface-container-highest flex items-center px-0.5 transition-colors" data-active="false">
+<div class="w-5 h-5 rounded-full bg-outline shadow-md transform translate-x-0 transition-transform"></div>
+</button>
+</div>
+<div class="flex flex-col">
+<span class="font-title-md text-title-md text-on-surface font-medium leading-tight">Smart Scroll</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant mt-0.5">Tilt • Palm Push</span>
+</div>
+</div>
+<!-- Card 4: Floating HUD Toggle -->
+<div class="p-space-md rounded-xl bg-surface-container flex flex-col justify-between gap-space-md shadow-md">
+<div class="flex items-center justify-between">
+<div class="w-9 h-9 rounded-lg bg-surface-container-high flex items-center justify-center text-tertiary-fixed-dim">
+<span class="material-symbols-outlined text-[20px]">layers</span>
+</div>
+<button class="toggle-switch w-11 h-6 rounded-full bg-secondary-container flex items-center px-0.5 transition-colors" data-active="true">
+<div class="w-5 h-5 rounded-full bg-surface shadow-md transform translate-x-5 transition-transform"></div>
+</button>
+</div>
+<div class="flex flex-col">
+<span class="font-title-md text-title-md text-on-surface font-medium leading-tight">Floating HUD</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant mt-0.5">Spatial Overlay Pill</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Sensitivity Calibration Slider Card -->
+<div class="p-space-md rounded-xl bg-surface-container flex flex-col gap-space-sm shadow-md">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary text-[18px]">tune</span>
+<span class="font-title-md text-title-md text-on-surface font-medium">Spatial Motion Sensitivity</span>
+</div>
+<span class="font-label-sm text-label-sm text-primary px-2 py-0.5 rounded bg-surface-container-high" id="sensitivity-value">84% SENS</span>
+</div>
+<!-- Stepped Slider Line Component -->
+<div class="relative w-full h-8 flex items-center cursor-pointer select-none" id="sensitivity-slider-box">
+<div class="w-full h-1.5 rounded-full bg-surface-container-highest overflow-hidden">
+<div class="h-full bg-primary-container rounded-full" id="sensitivity-fill" style="width: 84%;"></div>
+</div>
+<div class="absolute w-5 h-5 rounded-full bg-surface shadow-[0_0_10px_#00f0ff] flex items-center justify-center transition-all" id="sensitivity-knob" style="left: calc(84% - 10px);">
+<div class="w-2.5 h-2.5 rounded-full bg-primary-container"></div>
+</div>
+</div>
+<div class="flex items-center justify-between text-on-surface-variant font-label-sm text-label-sm">
+<span>Slow / Far Range</span>
+<span>Ultra-Responsive</span>
+</div>
+</div>
+</div>
+<script>
+  (function() {
+    // Engine State Toggle Interactivity
+    const toggleBtn = document.getElementById('toggle-engine-btn');
+    const engineText = document.getElementById('engine-btn-text');
+    const engineIcon = document.getElementById('engine-btn-icon');
+    let isRunning = true;
+
+    if (toggleBtn) {
+      toggleBtn.addEventListener('click', function() {
+        isRunning = !isRunning;
+        if (isRunning) {
+          toggleBtn.className = "w-full h-14 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center gap-space-sm font-headline-md text-headline-md font-bold uppercase tracking-wider shadow-[0_0_24px_rgba(0,240,255,0.35)] active:scale-[0.98] transition-all";
+          engineText.textContent = "PAUSE ENGINE";
+          engineIcon.textContent = "pause_circle";
+        } else {
+          toggleBtn.className = "w-full h-14 rounded-full bg-surface-container-highest text-on-surface flex items-center justify-center gap-space-sm font-headline-md text-headline-md font-bold uppercase tracking-wider shadow-md active:scale-[0.98] transition-all";
+          engineText.textContent = "START ENGINE";
+          engineIcon.textContent = "play_circle";
+        }
+      });
+    }
+
+    // Toggle switch micro-interactions
+    const switches = document.querySelectorAll('.toggle-switch');
+    switches.forEach(btn => {
+      btn.addEventListener('click', function() {
+        const isActive = this.getAttribute('data-active') === 'true';
+        const thumb = this.querySelector('div');
+        if (isActive) {
+          this.setAttribute('data-active', 'false');
+          this.classList.remove('bg-secondary-container');
+          this.classList.add('bg-surface-container-highest');
+          thumb.classList.remove('translate-x-5', 'bg-surface');
+          thumb.classList.add('translate-x-0', 'bg-outline');
+        } else {
+          this.setAttribute('data-active', 'true');
+          this.classList.remove('bg-surface-container-highest');
+          this.classList.add('bg-secondary-container');
+          thumb.classList.remove('translate-x-0', 'bg-outline');
+          thumb.classList.add('translate-x-5', 'bg-surface');
+        }
+      });
+    });
+
+    // Radar click interactive pulse feedback
+    const radar = document.getElementById('radar-trigger');
+    const hand = document.getElementById('radar-hand-icon');
+    const toast = document.getElementById('gesture-toast');
+    if (radar && hand) {
+      radar.addEventListener('click', function() {
+        hand.style.transform = 'scale(1.3) rotate(12deg)';
+        setTimeout(() => {
+          hand.style.transform = 'scale(1) rotate(0deg)';
+        }, 300);
+        if (toast) {
+          toast.classList.add('scale-[1.02]');
+          setTimeout(() => toast.classList.remove('scale-[1.02]'), 200);
+        }
+      });
+    }
+
+    // Interactive Sensitivity Drag/Tap
+    const sliderBox = document.getElementById('sensitivity-slider-box');
+    const sliderFill = document.getElementById('sensitivity-fill');
+    const sliderKnob = document.getElementById('sensitivity-knob');
+    const sliderValue = document.getElementById('sensitivity-value');
+
+    if (sliderBox) {
+      function updateSlider(e) {
+        const rect = sliderBox.getBoundingClientRect();
+        let clientX = e.clientX;
+        if (e.touches && e.touches.length > 0) clientX = e.touches[0].clientX;
+        let percent = Math.round(((clientX - rect.left) / rect.width) * 100);
+        percent = Math.max(10, Math.min(100, percent));
+        sliderFill.style.width = percent + '%';
+        sliderKnob.style.left = 'calc(' + percent + '% - 10px)';
+        sliderValue.textContent = percent + '% SENS';
+      }
+
+      sliderBox.addEventListener('click', updateSlider);
+      sliderBox.addEventListener('touchmove', updateSlider);
+    }
+  })();
+</script></main><nav class="fixed bottom-0 w-full z-50 pb-safe bg-surface-container-lowest/85 backdrop-blur-xl shadow-[0_-1px_12px_rgba(0,0,0,0.5)]" data-active-classes="text-primary-container bg-surface-container-highest"><div class="flex justify-around items-center h-20 px-space-sm"><a aria-current="page" class="flex flex-col items-center justify-center w-16 h-14 rounded-xl transition-all gap-1 text-primary-container bg-surface-container-highest" data-path="dashboard" href="#"><span class="material-symbols-outlined text-[22px]">radar</span><span class="font-label-sm text-label-sm tracking-tight">Radar</span></a><a class="flex flex-col items-center justify-center w-16 h-14 rounded-xl text-on-surface-variant hover:text-on-surface transition-all gap-1" data-path="gesture-center" href="#"><span class="material-symbols-outlined text-[22px]">front_hand</span><span class="font-label-sm text-label-sm tracking-tight">Gestures</span></a><a class="flex flex-col items-center justify-center w-16 h-14 rounded-xl text-on-surface-variant hover:text-on-surface transition-all gap-1" data-path="floating-hud" href="#"><span class="material-symbols-outlined text-[22px]">layers</span><span class="font-label-sm text-label-sm tracking-tight">HUD</span></a><a class="flex flex-col items-center justify-center w-16 h-14 rounded-xl text-on-surface-variant hover:text-on-surface transition-all gap-1" data-path="system-settings" href="#"><span class="material-symbols-outlined text-[22px]">settings</span><span class="font-label-sm text-label-sm tracking-tight">Settings</span></a></div></nav></body></html>

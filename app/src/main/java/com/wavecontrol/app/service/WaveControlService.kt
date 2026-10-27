@@ -1,5 +1,6 @@
 package com.wavecontrol.app.service
 
+import android.Manifest
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -9,6 +10,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.content.pm.PackageManager
 import android.content.pm.ServiceInfo
 import android.os.Build
 import android.os.IBinder
@@ -148,11 +150,9 @@ class WaveControlService : Service(), LifecycleOwner {
         val powerManager = getSystemService(Context.POWER_SERVICE) as? PowerManager
         val isScreenOn = powerManager?.isInteractive ?: true
 
-        if (isScreenOn || !currentSettings.pauseOnScreenOff) {
-            setupDetectors()
-        } else {
-            isDetectionPaused = true
-            updateNotification("Wave Control Paused", "Sensors temporarily paused (Screen Off)")
+        setupDetectors()
+        if (!isScreenOn && currentSettings.pauseOnScreenOff) {
+            pauseDetection("Screen Off (Battery Saver)")
         }
     }
 
@@ -170,7 +170,7 @@ class WaveControlService : Service(), LifecycleOwner {
         }
 
         // Camera detector
-        if (currentSettings.isCameraWaveEnabled && !isDetectionPaused) {
+        if (currentSettings.isCameraWaveEnabled) {
             setupCameraDetection()
         }
     }
@@ -190,8 +190,18 @@ class WaveControlService : Service(), LifecycleOwner {
     }
 
     private fun bindCameraUseCases() {
-        val provider = cameraProvider ?: return
+        val provider = cameraProvider ?: run {
+            setupCameraDetection()
+            return
+        }
         val executor = cameraExecutor ?: return
+
+        // Verify camera permission
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+            Log.w("WaveControlService", "Camera permission not granted yet, cannot bind CameraX.")
+            return
+        }
+
         try {
             cameraDetector = CameraWaveDetector(
                 sensitivity = currentSettings.sensitivity,
@@ -235,6 +245,7 @@ class WaveControlService : Service(), LifecycleOwner {
                 cameraSelector,
                 imageAnalysis
             )
+            Log.d("WaveControlService", "CameraX successfully bound for wave detection!")
         } catch (e: Exception) {
             Log.e("WaveControlService", "Error binding camera use cases: ${e.message}", e)
         }
@@ -371,10 +382,19 @@ class WaveControlService : Service(), LifecycleOwner {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        if (intent?.action == ACTION_STOP_SERVICE) {
-            settingsRepository.updateSettings { it.copy(isEnabled = false) }
-            stopSelf()
-            return START_NOT_STICKY
+        when (intent?.action) {
+            ACTION_STOP_SERVICE -> {
+                settingsRepository.updateSettings { it.copy(isEnabled = false) }
+                stopSelf()
+                return START_NOT_STICKY
+            }
+            ACTION_REBIND_CAMERA -> {
+                if (cameraProvider == null) {
+                    setupCameraDetection()
+                } else if (!isDetectionPaused && currentSettings.isCameraWaveEnabled) {
+                    bindCameraUseCases()
+                }
+            }
         }
         return START_NOT_STICKY
     }
@@ -407,6 +427,7 @@ class WaveControlService : Service(), LifecycleOwner {
         const val CHANNEL_ID = "wave_control_channel"
         const val NOTIFICATION_ID = 1001
         const val ACTION_STOP_SERVICE = "com.wavecontrol.app.action.STOP"
+        const val ACTION_REBIND_CAMERA = "com.wavecontrol.app.action.REBIND_CAMERA"
 
         var instance: WaveControlService? = null
             private set
@@ -419,6 +440,29 @@ class WaveControlService : Service(), LifecycleOwner {
 
         private val _liveMotionFlow = MutableSharedFlow<Triple<Float, Float, Float>>(replay = 1, extraBufferCapacity = 1)
         val liveMotionFlow = _liveMotionFlow.asSharedFlow()
+
+        fun notifyCameraPermissionGranted(context: Context) {
+            try {
+                instance?.let { service ->
+                    if (service.cameraProvider == null) {
+                        service.setupCameraDetection()
+                    } else if (!service.isDetectionPaused && service.currentSettings.isCameraWaveEnabled) {
+                        service.bindCameraUseCases()
+                    }
+                } ?: run {
+                    val intent = Intent(context, WaveControlService::class.java).apply {
+                        action = ACTION_REBIND_CAMERA
+                    }
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                        context.startForegroundService(intent)
+                    } else {
+                        context.startService(intent)
+                    }
+                }
+            } catch (e: Exception) {
+                Log.w("WaveControlService", "Error notifying camera permission: ${e.message}")
+            }
+        }
 
         fun startService(context: Context) {
             try {

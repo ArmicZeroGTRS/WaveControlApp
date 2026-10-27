@@ -26,10 +26,7 @@ class CameraWaveDetector(
         val screenY: Float,
         val time: Long,
         val energy: Float,
-        val leftEnergy: Float,
-        val rightEnergy: Float,
-        val topEnergy: Float,
-        val bottomEnergy: Float
+        val activeCells: Int
     )
 
     private val motionHistory = mutableListOf<MotionFrame>()
@@ -103,16 +100,12 @@ class CameraWaveDetector(
             val globalShift = (sumCurrent - sumPrev) / totalCells
 
             // Dynamic noise cutoff based on sensitivity
-            val noiseCutoff = 11f - (sensitivity * 5.5f) // ~5.5 to 10.5
+            val noiseCutoff = 10f - (sensitivity * 5.0f) // ~5.0 to 9.5
 
             var totalMotionDiff = 0f
+            var activeCells = 0
             var weightedScreenX = 0f
             var weightedScreenY = 0f
-
-            var leftZoneEnergy = 0f
-            var rightZoneEnergy = 0f
-            var topZoneEnergy = 0f
-            var bottomZoneEnergy = 0f
 
             for (gy in 0 until gridSize) {
                 for (gx in 0 until gridSize) {
@@ -126,25 +119,20 @@ class CameraWaveDetector(
                         val v = gy.toFloat() / (gridSize - 1f)
 
                         // Map sensor coordinates into portrait screen coordinates:
-                        // Front camera sensors on mobile devices are mounted in landscape (sensor width = 640 along phone height,
-                        // sensor height = 480 along phone width).
-                        // In a service, rotationDegrees is usually 0 (or uncompensated).
+                        // Front camera sensors on mobile devices are mounted in landscape.
                         // Matching rotation ensures X = phone horizontal, Y = phone vertical.
                         val (normX, normY) = when (rotationDegrees) {
                             90 -> Pair(1f - v, u)
                             180 -> Pair(1f - u, 1f - v)
                             270 -> Pair(v, 1f - u)
-                            else -> {
-                                // Default for front camera sensor in portrait phone
-                                Pair(v, 1f - u)
-                            }
+                            else -> Pair(v, 1f - u)
                         }
 
                         // Mirror front camera horizontally for natural user perspective
                         var screenX = 1f - normX
                         var screenY = normY
 
-                        // Apply Swap Axes if user device requires or user prefers
+                        // Swap axes if requested
                         if (swapAxes) {
                             val temp = screenX
                             screenX = screenY
@@ -155,15 +143,9 @@ class CameraWaveDetector(
                         if (invertVertical) screenY = 1f - screenY
 
                         totalMotionDiff += compensatedDiff
+                        activeCells++
                         weightedScreenX += screenX * compensatedDiff
                         weightedScreenY += screenY * compensatedDiff
-
-                        // Zone energy accumulations
-                        if (screenX < 0.35f) leftZoneEnergy += compensatedDiff
-                        else if (screenX > 0.65f) rightZoneEnergy += compensatedDiff
-
-                        if (screenY < 0.35f) topZoneEnergy += compensatedDiff
-                        else if (screenY > 0.65f) bottomZoneEnergy += compensatedDiff
                     }
                 }
             }
@@ -171,10 +153,15 @@ class CameraWaveDetector(
             // Update baseline
             System.arraycopy(currentGrid, 0, prevGrid, 0, totalCells)
 
-            val avgFrameEnergy = totalMotionDiff / totalCells
-            val minEnergyThreshold = 5f - (sensitivity * 3f) // ~2.0 to 4.7
+            val minActiveCells = (6 - (sensitivity * 3f)).toInt().coerceAtLeast(3)
+            val minDiff = 35f - (sensitivity * 15f)
 
-            if (avgFrameEnergy > minEnergyThreshold && totalMotionDiff > 0f) {
+            val frameEnergy = if (activeCells > 0) {
+                ((totalMotionDiff / (activeCells * 40f)) * 10f).coerceIn(0f, 100f)
+            } else 0f
+
+            // Record motion frame if above threshold
+            if (activeCells >= minActiveCells && totalMotionDiff > minDiff) {
                 val cx = (weightedScreenX / totalMotionDiff).coerceIn(0f, 1f)
                 val cy = (weightedScreenY / totalMotionDiff).coerceIn(0f, 1f)
 
@@ -183,19 +170,16 @@ class CameraWaveDetector(
                         screenX = cx,
                         screenY = cy,
                         time = now,
-                        energy = avgFrameEnergy,
-                        leftEnergy = leftZoneEnergy,
-                        rightEnergy = rightZoneEnergy,
-                        topEnergy = topZoneEnergy,
-                        bottomEnergy = bottomZoneEnergy
+                        energy = frameEnergy,
+                        activeCells = activeCells
                     )
                 )
             }
 
-            // Keep sliding window of 350ms
-            motionHistory.removeAll { now - it.time > 350L }
+            // Keep sliding window of 650ms for natural hand wave gestures
+            motionHistory.removeAll { now - it.time > 650L }
 
-            // Live vector calculation for real-time preview UI
+            // Live vector calculation for real-time telemetry preview UI
             var liveDx = 0f
             var liveDy = 0f
             if (motionHistory.size >= 2) {
@@ -204,7 +188,7 @@ class CameraWaveDetector(
                 liveDx = newest.screenX - oldest.screenX
                 liveDy = newest.screenY - oldest.screenY
             }
-            onLiveMotion?.invoke(avgFrameEnergy, liveDx, liveDy)
+            onLiveMotion?.invoke(frameEnergy, liveDx, liveDy)
 
             // Honor cooldown period
             if (now - lastTriggerTime < cooldownMs) {
@@ -212,12 +196,12 @@ class CameraWaveDetector(
             }
 
             // Evaluate Wave Gestures
-            if (motionHistory.size >= 3) {
+            if (motionHistory.size >= 2) {
                 val oldest = motionHistory.first()
                 val newest = motionHistory.last()
                 val duration = newest.time - oldest.time
 
-                if (duration in 70L..380L) {
+                if (duration in 75L..650L) {
                     val dx = newest.screenX - oldest.screenX
                     val dy = newest.screenY - oldest.screenY
 
@@ -225,12 +209,12 @@ class CameraWaveDetector(
                     val absDy = abs(dy)
 
                     // Movement threshold based on sensitivity
-                    val moveThreshold = 0.26f - (sensitivity * 0.12f) // ~0.14 to 0.24
+                    val moveThreshold = 0.22f - (sensitivity * 0.10f) // ~0.12 to 0.20
 
                     var detectedGesture = GestureType.NONE
 
                     // Check Horizontal Dominance (Wave Left / Right)
-                    if (absDx > moveThreshold && absDx > absDy * 1.2f) {
+                    if (absDx > moveThreshold && absDx > absDy * 1.15f) {
                         detectedGesture = if (dx > 0) {
                             GestureType.WAVE_RIGHT
                         } else {
@@ -238,7 +222,7 @@ class CameraWaveDetector(
                         }
                     }
                     // Check Vertical Dominance (Wave Up / Down)
-                    else if (absDy > moveThreshold && absDy > absDx * 1.2f) {
+                    else if (absDy > moveThreshold && absDy > absDx * 1.15f) {
                         // In screen coordinates: dy > 0 is downwards, dy < 0 is upwards
                         detectedGesture = if (dy > 0) {
                             GestureType.WAVE_DOWN
@@ -260,7 +244,7 @@ class CameraWaveDetector(
                                 confidence = confidence,
                                 vectorX = dx,
                                 vectorY = dy,
-                                motionEnergy = avgFrameEnergy,
+                                motionEnergy = frameEnergy,
                                 timestamp = now
                             )
                         )
@@ -269,9 +253,8 @@ class CameraWaveDetector(
                 }
             }
 
-            // Evaluate Hand Hover / Hold (Hand held in central view without rapid translation)
-            val hoverMinEnergy = 7f - (sensitivity * 3.5f)
-            if (avgFrameEnergy > hoverMinEnergy) {
+            // Evaluate Hand Hover / Hold (Hand held in front of camera steadily)
+            if (activeCells >= 15 && totalMotionDiff > 120f) {
                 if (motionHistory.size >= 2) {
                     val oldest = motionHistory.first()
                     val newest = motionHistory.last()
@@ -279,10 +262,10 @@ class CameraWaveDetector(
                     val driftY = abs(newest.screenY - oldest.screenY)
 
                     // If drift is low, hand is stationary
-                    if (driftX < 0.15f && driftY < 0.15f) {
+                    if (driftX < 0.16f && driftY < 0.16f) {
                         if (hoverStartTime == 0L) {
                             hoverStartTime = now
-                        } else if (now - hoverStartTime >= 800L && !isHovering) {
+                        } else if (now - hoverStartTime >= 650L && !isHovering) {
                             isHovering = true
                             lastTriggerTime = now
                             motionHistory.clear()
@@ -292,7 +275,7 @@ class CameraWaveDetector(
                                     confidence = 0.95f,
                                     vectorX = 0f,
                                     vectorY = 0f,
-                                    motionEnergy = avgFrameEnergy,
+                                    motionEnergy = frameEnergy,
                                     timestamp = now
                                 )
                             )

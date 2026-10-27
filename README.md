@@ -1,4 +1,5 @@
-# Wave Control Android App 🖐️📱
+# WaveControl Android App 🖐️📱
+### Touchless Gesture Control • Kinetic Telemetry Spatial UI
 
 [![Release](https://img.shields.io/github/v/release/ArmicZeroGTRS/WaveControlApp?color=blue&label=Release)](https://github.com/ArmicZeroGTRS/WaveControlApp/releases/latest)
 [![API](https://img.shields.io/badge/API-31%20to%2035-brightgreen.svg)](https://developer.android.com)
@@ -6,73 +7,90 @@
 [![Platform](https://img.shields.io/badge/Platform-Android-green.svg)](https://developer.android.com)
 [![Language](https://img.shields.io/badge/Language-Kotlin%202.3-purple.svg)](https://kotlinlang.org)
 
-Touch-free hand gesture control (*Wave Control*) application for Android using the front camera and proximity sensor. Built with **Jetpack Compose Material 3** and **AndroidX CameraX**.
+Touch-free spatial hand gesture control (*WaveControl*) application for Android using the front camera and proximity sensor. Completely rebuilt with the **Stitch AI Kinetic Telemetry Spatial UI** design system and the official **Gemini 4 Argon Brand Identity**.
 
-> [!NOTE]
-> **Version 1.2**: Completely free of Accessibility Services and Restricted Settings. **100% Safe to use alongside Mobile Banking apps (BCA, Mandiri, BRImo, Seabank, etc.) without triggering security blocks or Google Play Protect harmful app warnings.**
+> [!IMPORTANT]
+> **Version 1.3**:
+> 1. **Gemini 4 Argon Brand Identity Integration**: Official glowing wave mark, dark wordmark header, and adaptive Android launcher icons.
+> 2. **Stitch AI Kinetic Telemetry Spatial UI**: 4 newly architected screens — **Radar Dashboard**, **Gesture Control Center**, **Floating HUD Studio**, and **System Settings & Hardware Profiles**.
+> 3. **Gesture Detection Engine Bug Fix**: Fixed the issue where gestures were not detected or responsive. Resolved frame energy dilution by isolating active motion cells, expanded natural hand swipe duration to 75–650ms, and added dynamic CameraX permission rebinding.
+> 4. **100% Mobile Banking Safe**: Zero Accessibility Services used. Fully compliant with Android 15 Restricted Settings without triggering safety warnings.
 
 ---
 
 ## 📥 Ready-to-Install APK Download
 
 Download the latest pre-built APK directly without building:
-👉 **[Download WaveControl-v1.2.apk](https://github.com/ArmicZeroGTRS/WaveControlApp/releases/download/v1.2/WaveControl-v1.2.apk)** *(Version 1.2)*
+👉 **[Download WaveControl-v1.3.apk](https://github.com/ArmicZeroGTRS/WaveControlApp/releases/download/v1.3/WaveControl-v1.3.apk)** *(Version 1.3, Build 4)*
 
 ---
 
 ## 📋 Technical Specifications
 | Component | Specification |
 |---|---|
+| **Version** | v1.3 (versionCode 4) |
 | **Minimum SDK** | API 31 (Android 12 Snow Cone) |
 | **Target SDK** | API 35 (Android 15 Vanilla Ice Cream) |
 | **Compile SDK** | API 36 |
 | **Programming Language** | Kotlin 2.3 |
-| **UI Framework** | Jetpack Compose (Material 3) |
+| **UI Design System** | Stitch AI Kinetic Telemetry Spatial UI (Jetpack Compose Material 3) |
+| **Brand Identity** | Gemini 4 Argon WaveControl Logo System |
 | **Camera Engine** | AndroidX CameraX (ImageAnalysis YUV-420-888) |
 | **Background Processing** | Android Foreground Service + StateFlow |
 | **Device Security** | 100% Mobile Banking & Android 15 Compliant (No Accessibility Service) |
 
 ---
 
-## ✨ Key Features
+## ✨ Screen Architecture & Features
 
-### 1. Front Camera Hand Gesture Detection (*Optical Motion Tracking*)
-* **👈 Wave Left:** Swipe palm across towards the left side of the screen.
-* **👉 Wave Right:** Swipe palm across towards the right side of the screen.
-* **👆 Wave Up:** Swipe palm upwards.
-* **👇 Wave Down:** Swipe palm downwards.
-* **✋ Hand Hover / Hold:** Hold palm still in front of the camera (~0.8s).
-* **Swap Axes Feature:** Integrated "Swap Gesture Axes (X ↔ Y)" toggle switch and one-tap quick calibration button for devices with different sensor mount orientations.
+### 1. 📡 Radar Dashboard (`HomeScreen.kt`)
+* **Real-Time Concentric Radar Graphic:** Interactive glowing spatial visualizer with vector target quadrants (`UP`, `DOWN`, `PREV`, `NEXT`).
+* **Hardware Status Ribbon:** Live `ENGINE ACTIVE` heartbeat, `60 FPS` optical clock, and `BANK SAFE` verified indicator.
+* **Camera Lock & Latency Readout:** Sub-14ms telemetry latency indicator with real-time vector coordinate monitoring.
+* **Master Engine Command Pill:** Ergonomic full-width start/pause capsule button with tactile pulse feedback.
+* **Active Telemetry Bus:** Live stream of last recognized gesture, target application, and sensor fusion health.
 
-### 2. Fast Proximity Wave (*Proximity Sensor*)
-* **📱 Proximity Wave:** Quick swipe close to the top of the phone screen (< 5 cm).
-* Works instantaneously even in pitch-black dark rooms with ultra-low battery consumption.
+### 2. 🎛️ Gesture Control Center (`GestureConfigScreen.kt`)
+* **Kinetic Radar Engine Telemetry Strip:** Active Mesh counter (`6 / 6 Bound Vectors`), zero-interference conflict indicator, and dynamic optical profile.
+* **Domain Quick Action Filters:** Category filtering for `All Domains`, `Media Control`, `System Audio`, `Scrolling`, and `Navigation`.
+* **Configured Gesture Nodes:**
+  * **👈 Wave Left (W-L):** Previous Track / Rewind.
+  * **👉 Wave Right (W-R):** Next Track / Fast-forward.
+  * **👆 Wave Up (W-U):** Volume Up.
+  * **👇 Wave Down (W-D):** Volume Down.
+  * **✋ Hand Hover / Hold (H-H):** Play / Pause Toggle.
+  * **📱 Proximity Wave (P-W):** Ultra-fast proximity swipe (< 5cm).
+* **Live Action Remapping & Test Runner:** Interactive modal to reassign actions and test execution instantly.
 
-### 3. Multimedia & System Action Mapping (*Hands-Free Action Mapping*)
-Each gesture can be independently mapped to safe, native system actions:
-* **Media Playback:** Play / Pause, Next Track, Previous Track (Compatible with Spotify, YouTube Music, Netflix, Apple Music, VLC, etc.).
-* **Volume Control:** Volume Up, Volume Down, Mute / Unmute Audio.
-* **Tools:** Toggle Flashlight, Turn Flashlight On, Turn Flashlight Off.
+### 3. 🖥️ Floating HUD Studio & Diagnostics (`FloatingHudScreen.kt`)
+* **HUD Simulator Viewport:** 16:9 simulated display previewing the glowing HUD capsule over active applications.
+* **Visual Topology Anchor Selector:** Switch between `Center Island`, `Top-Right`, and `Dynamic Edge`.
+* **Real-Time Trigger Simulation:** One-tap test button to inspect HUD capsule animations and dismissal latency.
+* **Overlay Privilege Banner:** Real-time check and deep link for system overlay capabilities.
 
-### 4. Battery Saver & Power Management
-* **Auto-Pause on Screen Off:** Front camera and proximity sensor automatically shut down when the screen locks or turns off to preserve battery life.
-* **Low Power Mode:** Optimized frame rate and background sampling intervals.
+### 4. ⚙️ System Settings & Hardware Profiles (`SettingsScreen.kt`)
+* **Appearance & Theme Selector:** Pure obsidian `Dark` mode (OLED optimized), `Light` mode, or `Auto` (System) — persisted live across sessions.
+* **Spatial Haptic Pulse:** Configurable actuator resonance percentage for mid-air vector crossing confirmations.
+* **Reduced Kinematics:** Performance toggle to suppress decorative animations on lower-end devices.
+* **Axis Swap Calibration:** Resolves inverted or landscape sensor mountings on various hardware manufacturers.
+* **Screen-Off Battery Saver:** Automatically pauses camera and proximity sensors when the device is locked.
+* **Sandboxed Security Vault:** Detailed safety audit confirming 0% risk for banking apps.
+* **About WaveControl:** Gemini 4 Argon brand showcase and developer credentials.
 
 ---
 
 ## 🛠️ Required Permissions (Standard Runtime Only)
-1. **Camera (`android.permission.CAMERA`):** Analyzes camera frames locally on-device to track hand motion (no images are ever stored or transmitted).
+1. **Camera (`android.permission.CAMERA`):** Analyzes camera frames locally in volatile memory to calculate hand motion vectors (no pictures or videos are ever saved, stored, or transmitted).
 2. **Notifications (`android.permission.POST_NOTIFICATIONS`):** Maintains the foreground service status banner on Android 13+.
 
-> **Does NOT require Accessibility Service or Restricted Settings.**
+> **Does NOT require Accessibility Service, Device Administrator, or Android 15 Restricted Settings.**
 
 ---
 
-## 🚀 Installation & Setup
-1. Download [`WaveControl-v1.2.apk`](https://github.com/ArmicZeroGTRS/WaveControlApp/releases/download/v1.2/WaveControl-v1.2.apk).
-2. Open the downloaded APK on your Android device.
-3. Allow installation from unknown sources if prompted.
-4. Launch **Wave Control**, grant the Camera and Notification permissions, and turn on the master switch!
+## 🚀 Installation
+1. Download [`WaveControl-v1.3.apk`](https://github.com/ArmicZeroGTRS/WaveControlApp/releases/download/v1.3/WaveControl-v1.3.apk).
+2. Open the APK on your Android device and confirm installation.
+3. Launch **WaveControl**, grant standard Camera permission, and toggle the master switch to begin touchless gesture control!
 
 ---
 

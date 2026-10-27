@@ -15,6 +15,12 @@ data class WaveSettings(
     val sensitivity: Float = 0.55f,        // 0.1f (less sensitive) to 0.95f (more sensitive)
     val cooldownMs: Long = 750L,          // 400ms to 2000ms
 
+    // Stitch Kinetic Spatial Settings
+    val themeMode: String = "dark",       // "dark", "light", "system"
+    val hapticIntensity: Float = 0.68f,   // 0.0f to 1.0f
+    val reducedMotion: Boolean = false,   // Suppress decorative particle drift to prioritize raw FPS
+    val hudAnchorPosition: String = "CENTER_ISLAND", // "TOP_RIGHT", "CENTER_ISLAND", "DYNAMIC_EDGE"
+
     // Gesture Mapping
     val actionWaveLeft: WaveAction = WaveAction.MEDIA_PREV,
     val actionWaveRight: WaveAction = WaveAction.MEDIA_NEXT,

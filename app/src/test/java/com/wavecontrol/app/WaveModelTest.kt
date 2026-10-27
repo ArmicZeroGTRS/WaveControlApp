@@ -23,6 +23,12 @@ class WaveModelTest {
         assertFalse(settings.swapAxes)
         assertFalse(settings.invertHorizontal)
         assertFalse(settings.invertVertical)
+
+        // Stitch Kinetic Spatial Settings defaults
+        assertEquals("dark", settings.themeMode)
+        assertEquals(0.68f, settings.hapticIntensity, 0.001f)
+        assertFalse(settings.reducedMotion)
+        assertEquals("CENTER_ISLAND", settings.hudAnchorPosition)
     }
 
     @Test

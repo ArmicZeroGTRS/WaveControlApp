@@ -2,21 +2,33 @@ package com.wavecontrol.app.theme
 
 import androidx.compose.ui.graphics.Color
 
-val PrimaryBlue = Color(0xFF2563EB)
-val PrimaryBlueVariant = Color(0xFF1D4ED8)
-val SecondaryTeal = Color(0xFF0D9488)
-val AccentPurple = Color(0xFF7C3AED)
-val AccentGreen = Color(0xFF10B981)
-val AccentOrange = Color(0xFFF59E0B)
+// Stitch "Kinetic Telemetry Spatial UI" Color System
+val KineticBackground = Color(0xFF0B1326)
+val KineticSurfaceLowest = Color(0xFF060E20)
+val KineticSurfaceLow = Color(0xFF131B2E)
+val KineticSurface = Color(0xFF171F33)
+val KineticSurfaceHigh = Color(0xFF222A3D)
+val KineticSurfaceHighest = Color(0xFF2D3449)
 
-val BackgroundDark = Color(0xFF0F172A)
-val SurfaceDark = Color(0xFF1E293B)
-val SurfaceVariantDark = Color(0xFF334155)
-val TextPrimaryDark = Color(0xFFF8FAFC)
-val TextSecondaryDark = Color(0xFF94A3B8)
+val LuminousCyan = Color(0xFF00F0FF)
+val LuminousCyanDim = Color(0xFF00DBE9)
+val CyberTeal = Color(0xFF6BD8CB)
+val CyberTealDark = Color(0xFF0D9488)
+val ElectricViolet = Color(0xFF7C3AED)
+val ElectricVioletLight = Color(0xFFE3D2FF)
 
-val BackgroundLight = Color(0xFFF8FAFC)
-val SurfaceLight = Color(0xFFFFFFFF)
-val SurfaceVariantLight = Color(0xFFF1F5F9)
-val TextPrimaryLight = Color(0xFF0F172A)
-val TextSecondaryLight = Color(0xFF64748B)
+val OperationalEmerald = Color(0xFF10B981)
+val ImpulseAmber = Color(0xFFF59E0B)
+val TerminalRed = Color(0xFFEF4444)
+
+val OnSurface = Color(0xFFDAE2FD)
+val OnSurfaceVariant = Color(0xFFB9CACB)
+val HairlineBorder = Color(0xFF334155)
+val HairlineBorderVariant = Color(0xFF3B494B)
+
+// Light Theme Extensions
+val LightBackground = Color(0xFFF1F5F9)
+val LightSurface = Color(0xFFFFFFFF)
+val LightSurfaceHigh = Color(0xFFE2E8F0)
+val LightOnSurface = Color(0xFF0F172A)
+val LightOnSurfaceVariant = Color(0xFF475569)

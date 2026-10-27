@@ -31,6 +31,10 @@ class WaveSettingsRepository(context: Context) {
             invertVertical = prefs.getBoolean(KEY_INVERT_VERTICAL, false),
             sensitivity = prefs.getFloat(KEY_SENSITIVITY, 0.55f),
             cooldownMs = prefs.getLong(KEY_COOLDOWN_MS, 750L),
+            themeMode = prefs.getString(KEY_THEME_MODE, "dark") ?: "dark",
+            hapticIntensity = prefs.getFloat(KEY_HAPTIC_INTENSITY, 0.68f),
+            reducedMotion = prefs.getBoolean(KEY_REDUCED_MOTION, false),
+            hudAnchorPosition = prefs.getString(KEY_HUD_ANCHOR_POSITION, "CENTER_ISLAND") ?: "CENTER_ISLAND",
             actionWaveLeft = getAction(KEY_ACTION_WAVE_LEFT, WaveAction.MEDIA_PREV),
             actionWaveRight = getAction(KEY_ACTION_WAVE_RIGHT, WaveAction.MEDIA_NEXT),
             actionWaveUp = getAction(KEY_ACTION_WAVE_UP, WaveAction.VOLUME_UP),
@@ -61,6 +65,10 @@ class WaveSettingsRepository(context: Context) {
             .putBoolean(KEY_INVERT_VERTICAL, s.invertVertical)
             .putFloat(KEY_SENSITIVITY, s.sensitivity)
             .putLong(KEY_COOLDOWN_MS, s.cooldownMs)
+            .putString(KEY_THEME_MODE, s.themeMode)
+            .putFloat(KEY_HAPTIC_INTENSITY, s.hapticIntensity)
+            .putBoolean(KEY_REDUCED_MOTION, s.reducedMotion)
+            .putString(KEY_HUD_ANCHOR_POSITION, s.hudAnchorPosition)
             .putString(KEY_ACTION_WAVE_LEFT, s.actionWaveLeft.name)
             .putString(KEY_ACTION_WAVE_RIGHT, s.actionWaveRight.name)
             .putString(KEY_ACTION_WAVE_UP, s.actionWaveUp.name)
@@ -94,6 +102,10 @@ class WaveSettingsRepository(context: Context) {
         private const val KEY_INVERT_VERTICAL = "invert_vertical"
         private const val KEY_SENSITIVITY = "sensitivity"
         private const val KEY_COOLDOWN_MS = "cooldown_ms"
+        private const val KEY_THEME_MODE = "theme_mode"
+        private const val KEY_HAPTIC_INTENSITY = "haptic_intensity"
+        private const val KEY_REDUCED_MOTION = "reduced_motion"
+        private const val KEY_HUD_ANCHOR_POSITION = "hud_anchor_position"
         private const val KEY_ACTION_WAVE_LEFT = "action_wave_left"
         private const val KEY_ACTION_WAVE_RIGHT = "action_wave_right"
         private const val KEY_ACTION_WAVE_UP = "action_wave_up"
@@ -102,11 +114,11 @@ class WaveSettingsRepository(context: Context) {
         private const val KEY_ACTION_PROXIMITY = "action_proximity"
 
         @Volatile
-        private var instance: WaveSettingsRepository? = null
+        private var INSTANCE: WaveSettingsRepository? = null
 
         fun getInstance(context: Context): WaveSettingsRepository {
-            return instance ?: synchronized(this) {
-                instance ?: WaveSettingsRepository(context).also { instance = it }
+            return INSTANCE ?: synchronized(this) {
+                INSTANCE ?: WaveSettingsRepository(context).also { INSTANCE = it }
             }
         }
     }

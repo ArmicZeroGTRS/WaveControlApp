@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/><meta content="mobile_tab" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600;700&amp;family=Space+Grotesk:wght@500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{width:100vw;margin:0;padding:0;}body{overscroll-behavior:none;}.pb-safe{padding-bottom:env(safe-area-inset-bottom,0px);}.pt-safe{padding-top:env(safe-area-inset-top,0px);}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { "colors": { "tertiary-fixed": "#eaddff", "outline-variant": "#3b494b", "on-primary-container": "#006970", "background": "#0b1326", "surface-container-highest": "#2d3449", "on-surface-variant": "#b9cacb", "on-tertiary-fixed-variant": "#5a00c6", "secondary": "#6bd8cb", "surface-container-high": "#222a3d", "on-tertiary": "#3f008e", "primary-fixed": "#7df4ff", "primary-fixed-dim": "#00dbe9", "tertiary": "#fbf3ff", "error": "#ffb4ab", "surface-container": "#171f33", "outline": "#849495", "on-secondary-fixed-variant": "#005049", "primary": "#dbfcff", "on-secondary-container": "#00302b", "on-error": "#690005", "inverse-primary": "#006970", "surface-tint": "#00dbe9", "surface-container-lowest": "#060e20", "on-surface": "#dae2fd", "secondary-fixed-dim": "#6bd8cb", "surface": "#0b1326", "inverse-on-surface": "#283044", "tertiary-container": "#e3d2ff", "surface-container-low": "#131b2e", "error-container": "#93000a", "tertiary-fixed-dim": "#d2bbff", "secondary-fixed": "#89f5e7", "primary-container": "#00f0ff", "on-error-container": "#ffdad6", "inverse-surface": "#dae2fd", "on-secondary-fixed": "#00201d", "on-secondary": "#003732", "on-primary": "#00363a", "on-primary-fixed": "#002022", "on-background": "#dae2fd", "surface-dim": "#0b1326", "on-tertiary-container": "#742fe5", "surface-bright": "#31394d", "surface-variant": "#2d3449", "on-primary-fixed-variant": "#004f54", "secondary-container": "#29a195", "on-tertiary-fixed": "#25005a" }, "borderRadius": { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, "spacing": { "gutter": "1rem", "gutter-tablet": "1.5rem", "space-sm": "0.5rem", "margin": "1rem", "space-xs": "0.25rem", "space-md": "0.75rem", "margin-tablet": "2rem", "space-lg": "1rem", "space-xl": "1.5rem" }, "fontFamily": { "display-lg": [ "Space Grotesk" ], "label-md": [ "JetBrains Mono" ], "title-md": [ "Inter" ], "body-lg": [ "Inter" ], "headline-lg": [ "Space Grotesk" ], "label-sm": [ "JetBrains Mono" ], "display-lg-mobile": [ "Space Grotesk" ], "headline-md": [ "Space Grotesk" ], "body-md": [ "Inter" ] }, "fontSize": { "display-lg": [ "32px", { "lineHeight": "38px", "fontWeight": "700" } ], "label-md": [ "12px", { "lineHeight": "16px", "fontWeight": "600" } ], "title-md": [ "16px", { "lineHeight": "22px", "fontWeight": "500" } ], "body-lg": [ "15px", { "lineHeight": "22px", "fontWeight": "400" } ], "headline-lg": [ "22px", { "lineHeight": "28px", "fontWeight": "600" } ], "label-sm": [ "10px", { "lineHeight": "14px", "fontWeight": "500" } ], "display-lg-mobile": [ "26px", { "lineHeight": "32px", "fontWeight": "700" } ], "headline-md": [ "18px", { "lineHeight": "24px", "fontWeight": "600" } ], "body-md": [ "14px", { "lineHeight": "20px", "fontWeight": "400" } ] } } } }</script><style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head><body class="bg-surface font-body-md text-on-surface antialiased"><header class="fixed top-0 w-full z-50 pt-safe bg-surface-container-lowest/80 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.4)]"><div class="h-20 px-margin flex items-center justify-between"><div class="flex flex-col gap-space-xs"><div class="flex items-center gap-space-sm"><div class="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-surface-container-high"><span class="w-1.5 h-1.5 rounded-full bg-secondary shadow-[0_0_8px_#6bd8cb] animate-pulse"></span><span class="font-label-sm text-label-sm text-secondary uppercase tracking-wider">Engine Active</span></div><div class="flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-surface-container-high/60"><span class="material-symbols-outlined text-secondary text-[12px]">videocam</span><span class="font-label-sm text-label-sm text-on-surface-variant">60 FPS</span></div><div class="flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-surface-container-high/60"><span class="material-symbols-outlined text-secondary text-[12px]">accessibility_new</span><span class="font-label-sm text-label-sm text-on-surface-variant">SYNC</span></div></div><h1 class="font-headline-md text-headline-md text-primary font-semibold tracking-tight uppercase">Floating Hud</h1></div><div class="flex items-center gap-space-sm"><button aria-label="Notifications" class="w-11 h-11 rounded-full bg-surface-container flex items-center justify-center text-on-surface-variant hover:text-primary transition-colors"><span class="material-symbols-outlined text-[20px]">tune</span></button><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="flex flex-col relative w-full pt-20 pb-24 bg-surface min-h-screen"><div class="flex flex-col w-full px-margin pb-10 gap-space-lg">
+<!-- Interactive HUD Simulation Studio Viewport (16:9 Aspect Ratio) -->
+<section class="flex flex-col gap-space-sm">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-secondary text-[18px]">stream</span>
+<span class="font-headline-md text-headline-md text-primary tracking-tight">Floating HUD Studio</span>
+</div>
+<div class="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-surface-container-high shadow-sm">
+<span class="w-2 h-2 rounded-full bg-secondary animate-ping"></span>
+<span class="font-label-sm text-label-sm text-secondary uppercase tracking-widest">Active Stream</span>
+</div>
+</div>
+<!-- Simulated Phone Display Viewport with Simulated App Content underneath -->
+<div class="relative w-full aspect-video rounded-xl overflow-hidden bg-surface-container-lowest shadow-xl flex flex-col justify-between p-3 select-none">
+<!-- Simulated Background App (Mock Audio Player Backdrop) -->
+<div class="absolute inset-0 opacity-25 flex flex-col justify-between p-4 pointer-events-none">
+<div class="flex items-center justify-between">
+<div class="w-16 h-2 bg-on-surface-variant/40 rounded-full"></div>
+<div class="flex gap-1.5">
+<div class="w-2 h-2 rounded-full bg-on-surface-variant/40"></div>
+<div class="w-2 h-2 rounded-full bg-on-surface-variant/40"></div>
+</div>
+</div>
+<div class="flex flex-col gap-2 items-center my-auto">
+<div class="w-20 h-20 rounded-lg bg-surface-container-high flex items-center justify-center">
+<span class="material-symbols-outlined text-on-surface-variant text-[32px]">album</span>
+</div>
+<div class="w-32 h-2.5 bg-on-surface-variant/30 rounded-full"></div>
+<div class="w-20 h-2 bg-on-surface-variant/20 rounded-full"></div>
+</div>
+<div class="w-full h-1.5 bg-surface-container-high rounded-full overflow-hidden">
+<div class="w-3/5 h-full bg-on-surface-variant/50"></div>
+</div>
+</div>
+<!-- Real-Time Optical Grid Lines (Subtle telemetry overlay) -->
+<svg class="absolute inset-0 w-full h-full pointer-events-none opacity-20" xmlns="http://www.w3.org/2000/svg">
+<defs>
+<pattern height="24" id="hud-grid" patternunits="userSpaceOnUse" width="24">
+<path d="M 24 0 L 0 0 0 24" fill="none" stroke="#6bd8cb" stroke-dasharray="2,2" stroke-width="0.5"></path>
+</pattern>
+</defs>
+<rect fill="url(#hud-grid)" height="100%" width="100%"></rect>
+<!-- Central tracking target reticle -->
+<circle cx="50%" cy="50%" fill="none" r="28" stroke="#6bd8cb" stroke-dasharray="4,4" stroke-width="0.75"></circle>
+<line stroke="#6bd8cb" stroke-width="0.75" x1="50%" x2="50%" y1="42%" y2="58%"></line>
+<line stroke="#6bd8cb" stroke-width="0.75" x1="45%" x2="55%" y1="50%" y2="50%"></line>
+</svg>
+<!-- Viewport Header Diagnostics Metadata -->
+<div class="relative z-10 flex items-center justify-between">
+<div class="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-surface-container-low/90 backdrop-blur-md">
+<span class="material-symbols-outlined text-secondary text-[12px]">filter_center_focus</span>
+<span class="font-label-sm text-label-sm text-secondary tracking-wider font-semibold">PREVIEW // HUD SIMULATOR</span>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant" id="simulation-timer-text">READY</span>
+</div>
+<!-- Live Floating HUD Capsule Anchor (Target for repositioning & animation) -->
+<div class="relative z-20 flex justify-center w-full transition-all duration-300" id="hud-anchor-container">
+<div class="relative flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-surface-container-high/90 backdrop-blur-xl shadow-[0_0_20px_rgba(0,240,255,0.25)] transition-all duration-200 transform" id="hud-capsule">
+<div class="flex items-center justify-center w-6 h-6 rounded-full bg-secondary/20 text-secondary">
+<span class="material-symbols-outlined text-[15px]" id="hud-capsule-icon">swipe_right</span>
+</div>
+<div class="flex flex-col">
+<div class="flex items-center gap-1.5">
+<span class="font-label-sm text-label-sm text-primary font-bold tracking-tight" id="hud-telemetry-badge">WAVE RIGHT</span>
+<span class="w-1 h-1 rounded-full bg-secondary"></span>
+<span class="font-label-sm text-label-sm text-secondary uppercase font-semibold" id="hud-action-badge">NEXT TRACK</span>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant flex items-center gap-1" id="hud-meta-row">
+<span>LATENCY: 14ms</span>
+<span>•</span>
+<span class="text-secondary">DISPATCHED</span>
+</span>
+</div>
+<div class="ml-1 w-1.5 h-1.5 rounded-full bg-secondary animate-pulse"></div>
+</div>
+</div>
+<!-- Viewport Footer Trigger Area -->
+<div class="relative z-10 flex items-center justify-between">
+<span class="font-label-sm text-label-sm text-on-surface-variant/80">OVERLAY: SYSTEM_ALERT_WINDOW</span>
+<button class="flex items-center gap-1 px-3 py-1 rounded-full bg-secondary text-on-secondary shadow-md active:scale-95 transition-transform" id="test-trigger-btn" type="button">
+<span class="material-symbols-outlined text-[14px]">bolt</span>
+<span class="font-label-sm text-label-sm font-bold tracking-tight">TRIGGER GESTURE</span>
+</button>
+</div>
+</div>
+</section>
+<!-- Overlay Permission Status Banner -->
+<section class="flex items-center justify-between p-space-lg rounded-xl bg-surface-container-low shadow-sm">
+<div class="flex items-center gap-space-md">
+<div class="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center">
+<span class="material-symbols-outlined text-secondary text-[22px]" style="font-variation-settings: 'FILL' 1;">verified_user</span>
+</div>
+<div class="flex flex-col">
+<div class="flex items-center gap-2">
+<span class="font-title-md text-title-md text-on-surface font-semibold">Overlay Privilege</span>
+<span class="px-2 py-0.5 rounded-full bg-secondary/15 font-label-sm text-label-sm text-secondary font-bold">GRANTED</span>
+</div>
+<span class="font-body-md text-body-md text-on-surface-variant">Global System HUD enabled on Android 14+</span>
+</div>
+</div>
+<div class="flex items-center justify-center w-7 h-7 rounded-full bg-secondary text-on-secondary shadow-md">
+<span class="material-symbols-outlined text-[16px]">check</span>
+</div>
+</section>
+<!-- HUD Configuration Matrix -->
+<section class="flex flex-col gap-space-md">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-secondary text-[18px]">tune</span>
+<h2 class="font-headline-md text-headline-md text-primary tracking-tight">HUD Visual Topology</h2>
+</div>
+<!-- HUD Placement Options -->
+<div class="flex flex-col gap-space-xs p-space-lg rounded-xl bg-surface-container-low shadow-sm">
+<div class="flex items-center justify-between mb-1">
+<label class="font-title-md text-title-md text-on-surface font-medium">Screen Anchor Target</label>
+<span class="font-label-sm text-label-sm text-secondary font-bold" id="anchor-label">CENTER ISLAND</span>
+</div>
+<div class="grid grid-cols-3 gap-space-sm" role="radiogroup">
+<button class="pos-btn flex flex-col items-center justify-center gap-1.5 py-3 px-2 rounded-lg bg-surface-container hover:bg-surface-container-high transition-colors text-on-surface-variant" id="pos-top-right" type="button">
+<span class="material-symbols-outlined text-[20px]">north_east</span>
+<span class="font-label-sm text-label-sm text-center">Top-Right</span>
+</button>
+<button class="pos-btn flex flex-col items-center justify-center gap-1.5 py-3 px-2 rounded-lg bg-secondary text-on-secondary shadow-md font-semibold transition-colors" id="pos-center-island" type="button">
+<span class="material-symbols-outlined text-[20px]">expand_less</span>
+<span class="font-label-sm text-label-sm text-center font-bold">Center Island</span>
+</button>
+<button class="pos-btn flex flex-col items-center justify-center gap-1.5 py-3 px-2 rounded-lg bg-surface-container hover:bg-surface-container-high transition-colors text-on-surface-variant" id="pos-dynamic-edge" type="button">
+<span class="material-symbols-outlined text-[20px]">view_sidebar</span>
+<span class="font-label-sm text-label-sm text-center">Dynamic Edge</span>
+</button>
+</div>
+</div>
+<!-- HUD Layout Preset Style -->
+<div class="flex flex-col gap-space-xs p-space-lg rounded-xl bg-surface-container-low shadow-sm">
+<div class="flex items-center justify-between mb-1">
+<label class="font-title-md text-title-md text-on-surface font-medium">Telemetry Density</label>
+<span class="font-label-sm text-label-sm text-secondary font-bold" id="density-label">EXPANDED</span>
+</div>
+<div class="grid grid-cols-3 gap-space-sm">
+<button class="density-btn flex flex-col items-center justify-center gap-1 py-2.5 px-1 rounded-lg bg-surface-container text-on-surface-variant hover:bg-surface-container-high transition-colors" id="density-mini" type="button">
+<span class="material-symbols-outlined text-[18px]">horizontal_rule</span>
+<span class="font-label-sm text-label-sm">Mini Pill</span>
+</button>
+<button class="density-btn flex flex-col items-center justify-center gap-1 py-2.5 px-1 rounded-lg bg-surface-container text-on-surface-variant hover:bg-surface-container-high transition-colors" id="density-glyph" type="button">
+<span class="material-symbols-outlined text-[18px]">gesture</span>
+<span class="font-label-sm text-label-sm">Glyph Only</span>
+</button>
+<button class="density-btn flex flex-col items-center justify-center gap-1 py-2.5 px-1 rounded-lg bg-secondary text-on-secondary shadow-md font-bold transition-colors" id="density-expanded" type="button">
+<span class="material-symbols-outlined text-[18px]">notes</span>
+<span class="font-label-sm text-label-sm font-bold">Expanded</span>
+</button>
+</div>
+</div>
+<!-- Sliders: Opacity & Auto-Hide -->
+<div class="flex flex-col gap-space-md p-space-lg rounded-xl bg-surface-container-low shadow-sm">
+<!-- Opacity Slider -->
+<div class="flex flex-col gap-2">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-secondary text-[16px]">opacity</span>
+<span class="font-body-md text-body-md text-on-surface font-medium">HUD Glass Opacity</span>
+</div>
+<span class="font-label-sm text-label-sm text-secondary font-bold" id="opacity-val-badge">85%</span>
+</div>
+<div class="relative w-full flex items-center h-6">
+<input class="w-full h-1.5 bg-surface-container-highest rounded-full appearance-none cursor-pointer accent-[#6bd8cb]" id="opacity-slider" max="100" min="30" type="range" value="85"/>
+</div>
+</div>
+<!-- Auto-hide Timeout Slider -->
+<div class="flex flex-col gap-2">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-secondary text-[16px]">timer</span>
+<span class="font-body-md text-body-md text-on-surface font-medium">Auto-Dismiss Latency</span>
+</div>
+<span class="font-label-sm text-label-sm text-secondary font-bold" id="timeout-val-badge">2.5s</span>
+</div>
+<div class="relative w-full flex items-center h-6">
+<input class="w-full h-1.5 bg-surface-container-highest rounded-full appearance-none cursor-pointer accent-[#6bd8cb]" id="timeout-slider" max="50" min="10" type="range" value="25"/>
+</div>
+</div>
+</div>
+</section>
+<!-- Real-Time Camera & Sensor Stream Diagnostics -->
+<section class="flex flex-col gap-space-sm">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-secondary text-[18px]">monitoring</span>
+<h2 class="font-headline-md text-headline-md text-primary tracking-tight">Sensor Telemetry &amp; Flow</h2>
+</div>
+<div class="flex items-center gap-1 px-2 py-0.5 rounded-full bg-surface-container-high">
+<span class="font-label-sm text-label-sm text-secondary">PIPE: ZERO_COPY</span>
+</div>
+</div>
+<!-- Diagnostic Metric Cards Grid -->
+<div class="grid grid-cols-2 gap-space-sm">
+<!-- Metric 1: FPS -->
+<div class="flex flex-col p-space-md rounded-xl bg-surface-container-low shadow-sm">
+<div class="flex items-center justify-between text-on-surface-variant mb-1">
+<span class="font-label-sm text-label-sm uppercase">Front Sensor</span>
+<span class="material-symbols-outlined text-[16px] text-secondary">videocam</span>
+</div>
+<div class="flex items-baseline gap-1">
+<span class="font-headline-lg text-headline-lg text-primary font-bold">60.0</span>
+<span class="font-label-sm text-label-sm text-secondary font-semibold">FPS</span>
+</div>
+<div class="mt-2 w-full h-1 bg-surface-container-high rounded-full overflow-hidden">
+<div class="w-full h-full bg-secondary animate-pulse"></div>
+</div>
+<span class="mt-1 font-label-sm text-label-sm text-on-surface-variant truncate">Jitter &lt; 0.4ms</span>
+</div>
+<!-- Metric 2: Tracking Confidence -->
+<div class="flex flex-col p-space-md rounded-xl bg-surface-container-low shadow-sm">
+<div class="flex items-center justify-between text-on-surface-variant mb-1">
+<span class="font-label-sm text-label-sm uppercase">Vector Track</span>
+<span class="material-symbols-outlined text-[16px] text-secondary">psychology</span>
+</div>
+<div class="flex items-baseline gap-1">
+<span class="font-headline-lg text-headline-lg text-primary font-bold">98.4</span>
+<span class="font-label-sm text-label-sm text-secondary font-semibold">%</span>
+</div>
+<div class="mt-2 w-full h-1 bg-surface-container-high rounded-full overflow-hidden">
+<div class="w-[98%] h-full bg-secondary"></div>
+</div>
+<span class="mt-1 font-label-sm text-label-sm text-on-surface-variant truncate">Optical Flow Conf.</span>
+</div>
+<!-- Metric 3: Ambient Light Condition -->
+<div class="flex flex-col p-space-md rounded-xl bg-surface-container-low shadow-sm">
+<div class="flex items-center justify-between text-on-surface-variant mb-1">
+<span class="font-label-sm text-label-sm uppercase">Illumination</span>
+<span class="material-symbols-outlined text-[16px] text-secondary">wb_sunny</span>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="w-2 h-2 rounded-full bg-secondary"></span>
+<span class="font-title-md text-title-md text-primary font-semibold truncate">Optimal</span>
+</div>
+<span class="mt-1 font-label-sm text-label-sm text-on-surface-variant truncate">340 Lux Ambient</span>
+</div>
+<!-- Metric 4: Accessibility Event Dispatcher -->
+<div class="flex flex-col p-space-md rounded-xl bg-surface-container-low shadow-sm">
+<div class="flex items-center justify-between text-on-surface-variant mb-1">
+<span class="font-label-sm text-label-sm uppercase">Dispatcher</span>
+<span class="material-symbols-outlined text-[16px] text-secondary">check_circle</span>
+</div>
+<div class="flex items-baseline gap-1">
+<span class="font-headline-lg text-headline-lg text-secondary font-bold">0</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Drops</span>
+</div>
+<span class="mt-1 font-label-sm text-label-sm text-secondary truncate">Sync Validated</span>
+</div>
+</div>
+</section>
+<!-- Tactical Hardware Emulation Log Banner -->
+<section class="flex flex-col p-space-md rounded-xl bg-surface-container-lowest shadow-sm gap-2">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-secondary text-[14px]">terminal</span>
+<span class="font-label-sm text-label-sm text-primary uppercase font-bold">Hardware Event Channel</span>
+</div>
+<span class="font-label-sm text-label-sm text-secondary">IPC_OK</span>
+</div>
+<div class="font-label-sm text-label-sm text-on-surface-variant space-y-1">
+<p class="truncate"><span class="text-secondary">[12:44:02.103]</span> Binder IPC attached to /dev/sensor_hub_0</p>
+<p class="truncate"><span class="text-secondary">[12:44:02.842]</span> SurfaceFlinger composition target: Layer 3 Overlay</p>
+</div>
+</section>
+</div>
+<script>
+(function() {
+  const capsule = document.getElementById('hud-capsule');
+  const anchorContainer = document.getElementById('hud-anchor-container');
+  const triggerBtn = document.getElementById('test-trigger-btn');
+  const timerText = document.getElementById('simulation-timer-text');
+  const opacitySlider = document.getElementById('opacity-slider');
+  const opacityBadge = document.getElementById('opacity-val-badge');
+  const timeoutSlider = document.getElementById('timeout-slider');
+  const timeoutBadge = document.getElementById('timeout-val-badge');
+
+  const posTopRight = document.getElementById('pos-top-right');
+  const posCenterIsland = document.getElementById('pos-center-island');
+  const posDynamicEdge = document.getElementById('pos-dynamic-edge');
+  const anchorLabel = document.getElementById('anchor-label');
+
+  const densityMini = document.getElementById('density-mini');
+  const densityGlyph = document.getElementById('density-glyph');
+  const densityExpanded = document.getElementById('density-expanded');
+  const densityLabel = document.getElementById('density-label');
+
+  const hudIcon = document.getElementById('hud-capsule-icon');
+  const hudTelemetry = document.getElementById('hud-telemetry-badge');
+  const hudAction = document.getElementById('hud-action-badge');
+  const hudMeta = document.getElementById('hud-meta-row');
+
+  // Gestures Sequence for Testing
+  const gestures = [
+    { name: 'WAVE RIGHT', action: 'NEXT TRACK', icon: 'swipe_right' },
+    { name: 'WAVE LEFT', action: 'PREV TRACK', icon: 'swipe_left' },
+    { name: 'PUSH PALM', action: 'PAUSE AUDIO', icon: 'pan_tool' },
+    { name: 'FINGER TWIRL', action: 'VOL UP +10%', icon: 'rotate_right' }
+  ];
+  let gestureIdx = 0;
+  let autoHideTimer = null;
+
+  // Trigger Gesture Animation
+  function fireGestureTrigger() {
+    gestureIdx = (gestureIdx + 1) % gestures.length;
+    const g = gestures[gestureIdx];
+    
+    hudTelemetry.textContent = g.name;
+    hudAction.textContent = g.action;
+    hudIcon.textContent = g.icon;
+
+    // Pop scale animation
+    capsule.style.opacity = (opacitySlider.value / 100).toString();
+    capsule.style.transform = 'scale(1.08)';
+    timerText.textContent = 'DISPATCHED';
+    timerText.className = 'font-label-sm text-label-sm text-secondary font-bold';
+
+    clearTimeout(autoHideTimer);
+
+    setTimeout(() => {
+      capsule.style.transform = 'scale(1)';
+    }, 180);
+
+    const timeoutSec = (parseFloat(timeoutSlider.value) / 10).toFixed(1);
+    const timeoutMs = timeoutSec * 1000;
+
+    autoHideTimer = setTimeout(() => {
+      timerText.textContent = 'DORMANT';
+      timerText.className = 'font-label-sm text-label-sm text-on-surface-variant';
+      capsule.style.opacity = ((opacitySlider.value / 100) * 0.4).toString();
+    }, timeoutMs);
+  }
+
+  triggerBtn.addEventListener('click', fireGestureTrigger);
+
+  // Opacity Slider Handling
+  opacitySlider.addEventListener('input', (e) => {
+    const val = e.target.value;
+    opacityBadge.textContent = val + '%';
+    capsule.style.opacity = (val / 100).toString();
+  });
+
+  // Timeout Slider Handling
+  timeoutSlider.addEventListener('input', (e) => {
+    const val = (parseFloat(e.target.value) / 10).toFixed(1);
+    timeoutBadge.textContent = val + 's';
+  });
+
+  // Position Buttons Handling
+  const posButtons = [
+    { btn: posTopRight, align: 'justify-end pr-2', name: 'TOP-RIGHT' },
+    { btn: posCenterIsland, align: 'justify-center', name: 'CENTER ISLAND' },
+    { btn: posDynamicEdge, align: 'justify-start pl-2', name: 'DYNAMIC EDGE' }
+  ];
+
+  posButtons.forEach(item => {
+    item.btn.addEventListener('click', () => {
+      posButtons.forEach(b => {
+        b.btn.className = 'pos-btn flex flex-col items-center justify-center gap-1.5 py-3 px-2 rounded-lg bg-surface-container hover:bg-surface-container-high transition-colors text-on-surface-variant';
+      });
+      item.btn.className = 'pos-btn flex flex-col items-center justify-center gap-1.5 py-3 px-2 rounded-lg bg-secondary text-on-secondary shadow-md font-bold transition-colors';
+      anchorContainer.className = 'relative z-20 flex w-full transition-all duration-300 ' + item.align;
+      anchorLabel.textContent = item.name;
+    });
+  });
+
+  // Density Buttons Handling
+  densityMini.addEventListener('click', () => {
+    setDensityMode('mini');
+  });
+  densityGlyph.addEventListener('click', () => {
+    setDensityMode('glyph');
+  });
+  densityExpanded.addEventListener('click', () => {
+    setDensityMode('expanded');
+  });
+
+  function setDensityMode(mode) {
+    [densityMini, densityGlyph, densityExpanded].forEach(btn => {
+      btn.className = 'density-btn flex flex-col items-center justify-center gap-1 py-2.5 px-1 rounded-lg bg-surface-container text-on-surface-variant hover:bg-surface-container-high transition-colors';
+    });
+
+    if (mode === 'mini') {
+      densityMini.className = 'density-btn flex flex-col items-center justify-center gap-1 py-2.5 px-1 rounded-lg bg-secondary text-on-secondary shadow-md font-bold transition-colors';
+      densityLabel.textContent = 'MINI PILL';
+      hudTelemetry.classList.remove('hidden');
+      hudAction.classList.add('hidden');
+      hudMeta.classList.add('hidden');
+    } else if (mode === 'glyph') {
+      densityGlyph.className = 'density-btn flex flex-col items-center justify-center gap-1 py-2.5 px-1 rounded-lg bg-secondary text-on-secondary shadow-md font-bold transition-colors';
+      densityLabel.textContent = 'GLYPH ONLY';
+      hudTelemetry.classList.add('hidden');
+      hudAction.classList.add('hidden');
+      hudMeta.classList.add('hidden');
+    } else {
+      densityExpanded.className = 'density-btn flex flex-col items-center justify-center gap-1 py-2.5 px-1 rounded-lg bg-secondary text-on-secondary shadow-md font-bold transition-colors';
+      densityLabel.textContent = 'EXPANDED';
+      hudTelemetry.classList.remove('hidden');
+      hudAction.classList.remove('hidden');
+      hudMeta.classList.remove('hidden');
+    }
+  }
+
+  // Initial ping trigger after brief delay
+  setTimeout(fireGestureTrigger, 400);
+})();
+</script></main><nav class="fixed bottom-0 w-full z-50 pb-safe bg-surface-container-lowest/85 backdrop-blur-xl shadow-[0_-1px_12px_rgba(0,0,0,0.5)]" data-active-classes="text-primary-container bg-surface-container-highest"><div class="flex justify-around items-center h-20 px-space-sm"><a class="flex flex-col items-center justify-center w-16 h-14 rounded-xl text-on-surface-variant hover:text-on-surface transition-all gap-1" data-path="dashboard" href="#"><span class="material-symbols-outlined text-[22px]">radar</span><span class="font-label-sm text-label-sm tracking-tight">Radar</span></a><a class="flex flex-col items-center justify-center w-16 h-14 rounded-xl text-on-surface-variant hover:text-on-surface transition-all gap-1" data-path="gesture-center" href="#"><span class="material-symbols-outlined text-[22px]">front_hand</span><span class="font-label-sm text-label-sm tracking-tight">Gestures</span></a><a aria-current="page" class="flex flex-col items-center justify-center w-16 h-14 rounded-xl transition-all gap-1 text-primary-container bg-surface-container-highest" data-path="floating-hud" href="#"><span class="material-symbols-outlined text-[22px]">layers</span><span class="font-label-sm text-label-sm tracking-tight">HUD</span></a><a class="flex flex-col items-center justify-center w-16 h-14 rounded-xl text-on-surface-variant hover:text-on-surface transition-all gap-1" data-path="system-settings" href="#"><span class="material-symbols-outlined text-[22px]">settings</span><span class="font-label-sm text-label-sm tracking-tight">Settings</span></a></div></nav></body></html>
