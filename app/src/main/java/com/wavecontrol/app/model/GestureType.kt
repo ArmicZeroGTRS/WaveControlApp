@@ -5,11 +5,11 @@ enum class GestureType(
     val description: String,
     val emoji: String
 ) {
-    NONE("Tidak Ada", "Belum ada gerakan terdeteksi", "⏳"),
-    WAVE_LEFT("Lambaian ke Kiri", "Gerakan tangan melintas ke kiri", "👈"),
-    WAVE_RIGHT("Lambaian ke Kanan", "Gerakan tangan melintas ke kanan", "👉"),
-    WAVE_UP("Lambaian ke Atas", "Gerakan tangan mengarah ke atas", "👆"),
-    WAVE_DOWN("Lambaian ke Bawah", "Gerakan tangan mengarah ke bawah", "👇"),
-    HAND_HOVER("Tangan Diam / Hover", "Menahan telapak tangan di depan kamera", "✋"),
-    PROXIMITY_WAVE("Sensor Jarak (Wave)", "Lambaian cepat dekat sensor layar", "📱")
+    NONE("None", "No gesture detected yet", "⏳"),
+    WAVE_LEFT("Wave Left", "Hand moving towards the left", "👈"),
+    WAVE_RIGHT("Wave Right", "Hand moving towards the right", "👉"),
+    WAVE_UP("Wave Up", "Hand moving upwards", "👆"),
+    WAVE_DOWN("Wave Down", "Hand moving downwards", "👇"),
+    HAND_HOVER("Hand Hover / Hold", "Holding palm still in front of camera", "✋"),
+    PROXIMITY_WAVE("Proximity Wave", "Quick swipe near the screen sensor", "📱")
 }

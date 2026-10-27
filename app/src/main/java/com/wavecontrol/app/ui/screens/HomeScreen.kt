@@ -106,13 +106,13 @@ fun HomeScreen(
 
                         Column {
                             Text(
-                                text = if (settings.isEnabled) "Wave Control AKTIF" else "Wave Control NONAKTIF",
+                                text = if (settings.isEnabled) "Wave Control ACTIVE" else "Wave Control INACTIVE",
                                 style = MaterialTheme.typography.titleLarge,
                                 fontWeight = FontWeight.Bold,
                                 color = if (settings.isEnabled) Color.White else MaterialTheme.colorScheme.onSurfaceVariant
                             )
                             Text(
-                                text = if (settings.isEnabled) "Mendeteksi gerakan tangan di latar belakang" else "Sentuh sakelar untuk mengaktifkan",
+                                text = if (settings.isEnabled) "Detecting hand gestures in the background" else "Toggle switch to activate",
                                 style = MaterialTheme.typography.bodySmall,
                                 color = if (settings.isEnabled) Color.White.copy(alpha = 0.85f) else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
                             )
@@ -137,7 +137,7 @@ fun HomeScreen(
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     SensorStatusChip(
-                        name = "Kamera Depan",
+                        name = "Front Camera",
                         isActive = settings.isEnabled && settings.isCameraWaveEnabled && hasCameraPermission,
                         modifier = Modifier.weight(1f)
                     )
@@ -187,13 +187,13 @@ fun HomeScreen(
 
                     Column(modifier = Modifier.weight(1f)) {
                         Text(
-                            text = "Gerakan Terdeteksi: ${event.gesture.title}",
+                            text = "Gesture Detected: ${event.gesture.title}",
                             color = Color(0xFF38BDF8),
                             fontWeight = FontWeight.Bold,
                             fontSize = 13.sp
                         )
                         Text(
-                            text = "Menjalankan: ${action.title}",
+                            text = "Action: ${action.title}",
                             color = Color.White,
                             fontSize = 12.sp
                         )

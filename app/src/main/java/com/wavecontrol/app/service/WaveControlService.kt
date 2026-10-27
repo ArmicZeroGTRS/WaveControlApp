@@ -67,7 +67,7 @@ class WaveControlService : Service(), LifecycleOwner {
             when (intent?.action) {
                 Intent.ACTION_SCREEN_OFF -> {
                     if (currentSettings.pauseOnScreenOff) {
-                        pauseDetection("Layar Mati (Hemat Baterai)")
+                        pauseDetection("Screen Off (Battery Saver)")
                     }
                 }
                 Intent.ACTION_SCREEN_ON, Intent.ACTION_USER_PRESENT -> {
@@ -152,7 +152,7 @@ class WaveControlService : Service(), LifecycleOwner {
             setupDetectors()
         } else {
             isDetectionPaused = true
-            updateNotification("Wave Control Dijeda", "Deteksi dihentikan sementara (Layar Mati)")
+            updateNotification("Wave Control Paused", "Sensors temporarily paused (Screen Off)")
         }
     }
 
@@ -246,7 +246,7 @@ class WaveControlService : Service(), LifecycleOwner {
         try {
             cameraProvider?.unbindAll()
             proximityDetector?.stop()
-            updateNotification("Wave Control Dijeda", "Sensor nonaktif ($reason)")
+            updateNotification("Wave Control Paused", "Sensors inactive ($reason)")
         } catch (e: Exception) {
             Log.w("WaveControlService", "Error pausing detection: ${e.message}")
         }
@@ -262,7 +262,7 @@ class WaveControlService : Service(), LifecycleOwner {
             if (currentSettings.isProximityWaveEnabled) {
                 proximityDetector?.start()
             }
-            updateNotification("Wave Control Berjalan", "Mendeteksi gerakan tangan dan sensor jarak...")
+            updateNotification("Wave Control Running", "Detecting hand gestures and proximity sensor...")
         } catch (e: Exception) {
             Log.w("WaveControlService", "Error resuming detection: ${e.message}")
         }
@@ -290,7 +290,7 @@ class WaveControlService : Service(), LifecycleOwner {
     }
 
     private fun startForegroundServiceWithNotification() {
-        val notification = buildNotification("Wave Control Berjalan", "Mendeteksi gerakan tangan dan sensor jarak...")
+        val notification = buildNotification("Wave Control Running", "Detecting hand gestures and proximity sensor...")
 
         try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
@@ -349,7 +349,7 @@ class WaveControlService : Service(), LifecycleOwner {
             .setContentText(text)
             .setSmallIcon(R.drawable.ic_launcher_foreground)
             .setContentIntent(pendingIntent)
-            .addAction(0, "Matikan", stopPendingIntent)
+            .addAction(0, "Turn Off", stopPendingIntent)
             .setOngoing(true)
             .setPriority(NotificationCompat.PRIORITY_LOW)
             .build()
@@ -376,7 +376,6 @@ class WaveControlService : Service(), LifecycleOwner {
             stopSelf()
             return START_NOT_STICKY
         }
-        // Return START_NOT_STICKY to prevent infinite restart loop crashes when system kills background service on Android 14/15
         return START_NOT_STICKY
     }
 

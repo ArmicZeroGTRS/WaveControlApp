@@ -29,11 +29,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.wavecontrol.app.model.GestureType
 import com.wavecontrol.app.model.WaveAction
 import com.wavecontrol.app.model.WaveSettings
@@ -61,13 +59,13 @@ fun GestureConfigScreen(
         ) {
             Column(modifier = Modifier.padding(16.dp)) {
                 Text(
-                    text = "Pemetaan Aksi Gerakan (Wave Mapping)",
+                    text = "Gesture Action Mapping",
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
-                    text = "Atur tindakan untuk setiap arah lambaian tangan. Semua aksi aman 100% dan tidak memerlukan layanan aksesibilitas atau setelan terbatas.",
+                    text = "Configure actions for each hand wave direction. All actions are 100% safe and do not require accessibility services or restricted settings.",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -76,11 +74,11 @@ fun GestureConfigScreen(
 
         Spacer(modifier = Modifier.height(18.dp))
 
-        // SECTION 1: GERAKAN HORIZONTAL
+        // SECTION 1: HORIZONTAL GESTURES
         GestureSectionHeader(
             icon = Icons.Default.SwapHoriz,
-            title = "Gerakan Horizontal (Kiri & Kanan)",
-            subtitle = "Lambaian tangan mendatar dari samping ke samping"
+            title = "Horizontal Gestures (Left & Right)",
+            subtitle = "Horizontal hand wave from side to side"
         )
         Spacer(modifier = Modifier.height(8.dp))
 
@@ -102,11 +100,11 @@ fun GestureConfigScreen(
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        // SECTION 2: GERAKAN VERTIKAL
+        // SECTION 2: VERTICAL GESTURES
         GestureSectionHeader(
             icon = Icons.Default.SwapVert,
-            title = "Gerakan Vertikal (Atas & Bawah)",
-            subtitle = "Lambaian tangan tegak lurus mengarah ke atas atau ke bawah"
+            title = "Vertical Gestures (Up & Down)",
+            subtitle = "Vertical hand wave moving up or down"
         )
         Spacer(modifier = Modifier.height(8.dp))
 
@@ -128,11 +126,11 @@ fun GestureConfigScreen(
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        // SECTION 3: GERAKAN STATIS & PROXIMITY
+        // SECTION 3: STATIC & PROXIMITY GESTURES
         GestureSectionHeader(
             icon = Icons.Default.TouchApp,
-            title = "Gerakan Statis & Sensor Layar",
-            subtitle = "Menahan tangan di depan kamera atau melintas di sensor HP"
+            title = "Static & Proximity Gestures",
+            subtitle = "Holding hand still in front of camera or waving near sensor"
         )
         Spacer(modifier = Modifier.height(8.dp))
 

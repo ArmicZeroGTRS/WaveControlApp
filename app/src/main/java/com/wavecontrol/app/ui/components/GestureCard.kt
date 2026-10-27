@@ -24,7 +24,6 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
@@ -36,7 +35,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -114,7 +112,7 @@ fun GestureCard(
                 ) {
                     Column(modifier = Modifier.weight(1f)) {
                         Text(
-                            text = "Aksi yang Dijalankan:",
+                            text = "Action to Execute:",
                             fontSize = 11.sp,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -127,7 +125,7 @@ fun GestureCard(
                     }
                     Icon(
                         imageVector = Icons.Default.ArrowDropDown,
-                        contentDescription = "Pilih Aksi",
+                        contentDescription = "Select Action",
                         tint = MaterialTheme.colorScheme.primary
                     )
                 }
@@ -191,7 +189,7 @@ fun GestureCard(
                         modifier = Modifier.size(16.dp)
                     )
                     Spacer(modifier = Modifier.width(4.dp))
-                    Text(text = "Uji Coba Aksi", fontSize = 12.sp)
+                    Text(text = "Test Action", fontSize = 12.sp)
                 }
             }
         }

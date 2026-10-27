@@ -11,7 +11,7 @@ import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Help
+import androidx.compose.material.icons.automirrored.filled.Help
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.TouchApp
 import androidx.compose.material.icons.filled.Tune
@@ -82,7 +82,7 @@ fun MainApp() {
     ) { granted ->
         hasCameraPermission = granted
         if (!granted) {
-            Toast.makeText(context, "Izin kamera diperlukan untuk mendeteksi gerakan!", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, "Camera permission is required to detect gestures!", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -150,26 +150,26 @@ fun MainApp() {
                 NavigationBarItem(
                     selected = selectedTab == 0,
                     onClick = { selectedTab = 0 },
-                    icon = { Icon(Icons.Default.Home, contentDescription = "Beranda") },
-                    label = { Text("Beranda") }
+                    icon = { Icon(Icons.Default.Home, contentDescription = "Home") },
+                    label = { Text("Home") }
                 )
                 NavigationBarItem(
                     selected = selectedTab == 1,
                     onClick = { selectedTab = 1 },
-                    icon = { Icon(Icons.Default.TouchApp, contentDescription = "Aksi") },
-                    label = { Text("Aksi Gerakan") }
+                    icon = { Icon(Icons.Default.TouchApp, contentDescription = "Gestures") },
+                    label = { Text("Gestures") }
                 )
                 NavigationBarItem(
                     selected = selectedTab == 2,
                     onClick = { selectedTab = 2 },
-                    icon = { Icon(Icons.Default.Tune, contentDescription = "Sensitivitas") },
-                    label = { Text("Sensitivitas") }
+                    icon = { Icon(Icons.Default.Tune, contentDescription = "Sensitivity") },
+                    label = { Text("Sensitivity") }
                 )
                 NavigationBarItem(
                     selected = selectedTab == 3,
                     onClick = { selectedTab = 3 },
-                    icon = { Icon(Icons.Default.Help, contentDescription = "Panduan") },
-                    label = { Text("Panduan") }
+                    icon = { Icon(Icons.AutoMirrored.Filled.Help, contentDescription = "Guide") },
+                    label = { Text("Guide") }
                 )
             }
         }
@@ -194,7 +194,7 @@ fun MainApp() {
                         repository.updateSettings { it.copy(swapAxes = !current) }
                         Toast.makeText(
                             context,
-                            if (!current) "Sumbu X/Y Ditukar" else "Sumbu Normal",
+                            if (!current) "Gesture Axes: Swapped" else "Gesture Axes: Normal",
                             Toast.LENGTH_SHORT
                         ).show()
                     },

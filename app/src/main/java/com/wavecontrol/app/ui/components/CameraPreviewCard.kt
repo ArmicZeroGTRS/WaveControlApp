@@ -22,9 +22,9 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.ArrowDownward
-import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.ArrowUpward
 import androidx.compose.material.icons.filled.CameraFront
 import androidx.compose.material.icons.filled.Sensors
@@ -47,7 +47,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
@@ -58,7 +57,6 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.wavecontrol.app.model.GestureType
 import com.wavecontrol.app.service.WaveControlService
-import kotlin.math.abs
 
 @Composable
 fun CameraPreviewCard(
@@ -111,7 +109,7 @@ fun CameraPreviewCard(
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        text = if (isServiceRunning) "Radar & Deteksi Gerakan (Aktif)" else "Preview Kamera Depan",
+                        text = if (isServiceRunning) "Radar & Gesture Tracking (Active)" else "Front Camera Preview",
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.SemiBold
                     )
@@ -134,7 +132,7 @@ fun CameraPreviewCard(
                         )
                         Spacer(modifier = Modifier.width(4.dp))
                         Text(
-                            text = if (swapAxes) "Sumbu: Ditukar" else "Tukar Sumbu",
+                            text = if (swapAxes) "Axes: Swapped" else "Swap Axes",
                             fontSize = 11.sp,
                             fontWeight = FontWeight.SemiBold
                         )
@@ -154,7 +152,7 @@ fun CameraPreviewCard(
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = "Izin kamera diperlukan untuk mendeteksi gerakan",
+                        text = "Camera permission is required to detect gestures",
                         color = Color.White.copy(alpha = 0.7f),
                         style = MaterialTheme.typography.bodyMedium
                     )
@@ -183,7 +181,7 @@ fun CameraPreviewCard(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Text(
-                                text = "Sensivitas: %.1f".format(liveEnergy),
+                                text = "Motion: %.1f".format(liveEnergy),
                                 color = if (liveEnergy > 2.5f) Color(0xFF10B981) else Color(0xFF64748B),
                                 fontSize = 11.sp,
                                 fontWeight = FontWeight.SemiBold
@@ -192,7 +190,7 @@ fun CameraPreviewCard(
                             // UP ARROW
                             DirectionBadge(
                                 icon = Icons.Default.ArrowUpward,
-                                label = "Atas",
+                                label = "Up",
                                 isActive = liveVy < -0.12f
                             )
 
@@ -211,8 +209,8 @@ fun CameraPreviewCard(
                         ) {
                             // LEFT ARROW
                             DirectionBadge(
-                                icon = Icons.Default.ArrowBack,
-                                label = "Kiri",
+                                icon = Icons.AutoMirrored.Filled.ArrowBack,
+                                label = "Left",
                                 isActive = liveVx < -0.12f
                             )
 
@@ -237,8 +235,8 @@ fun CameraPreviewCard(
 
                             // RIGHT ARROW
                             DirectionBadge(
-                                icon = Icons.Default.ArrowForward,
-                                label = "Kanan",
+                                icon = Icons.AutoMirrored.Filled.ArrowForward,
+                                label = "Right",
                                 isActive = liveVx > 0.12f
                             )
                         }
@@ -251,7 +249,7 @@ fun CameraPreviewCard(
                         ) {
                             DirectionBadge(
                                 icon = Icons.Default.ArrowDownward,
-                                label = "Bawah",
+                                label = "Down",
                                 isActive = liveVy > 0.12f
                             )
                         }
@@ -309,7 +307,7 @@ fun CameraPreviewCard(
                                         cameraSelector,
                                         preview
                                     )
-                                } catch (e: Exception) {
+                                } catch (_: Exception) {
                                     // Safely ignore preview errors if hardware is busy
                                 }
                             }, ContextCompat.getMainExecutor(ctx))
@@ -320,7 +318,7 @@ fun CameraPreviewCard(
                     )
 
                     Text(
-                        text = "Wave Control nonaktif - Tekan Sakelar untuk Mengaktifkan",
+                        text = "Wave Control is inactive - Turn on switch to start",
                         color = Color.White.copy(alpha = 0.8f),
                         fontSize = 11.sp,
                         modifier = Modifier

@@ -58,23 +58,23 @@ fun GuideScreen(modifier: Modifier = Modifier) {
         ) {
             Column(modifier = Modifier.padding(18.dp)) {
                 Text(
-                    text = "Panduan Wave Control",
+                    text = "Wave Control User Guide",
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold,
                     color = Color.White
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
-                    text = "Kendalikan HP Android Anda tanpa menyentuh layar menggunakan sapuan tangan di udara.",
+                    text = "Control your Android phone hands-free using air wave gestures in front of the front camera.",
                     style = MaterialTheme.typography.bodyMedium,
                     color = Color.White.copy(alpha = 0.9f)
                 )
             }
         }
 
-        // Section: 3 Tips Utama
+        // Section: Key Tips
         Text(
-            text = "Kunci Deteksi Akurat",
+            text = "Key Detection Tips",
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Bold
         )
@@ -82,29 +82,29 @@ fun GuideScreen(modifier: Modifier = Modifier) {
         GuideItemCard(
             icon = Icons.Default.PanTool,
             iconTint = Color(0xFF3B82F6),
-            title = "1. Jarak Tangan Ideal (20 - 50 cm)",
-            desc = "Posisikan tangan Anda sekitar satu jengkal hingga setengah meter di depan kamera depan layar. Hindari meletakkan tangan terlalu dekat (< 10 cm)."
+            title = "1. Ideal Hand Distance (20 - 50 cm)",
+            desc = "Position your hand roughly 20 to 50 cm in front of the front camera. Avoid holding your hand too close (< 10 cm)."
         )
 
         GuideItemCard(
             icon = Icons.Default.BrightnessHigh,
             iconTint = Color(0xFFF59E0B),
-            title = "2. Pencahayaan Cukup",
-            desc = "Kamera memerlukan pencahayaan ruangan yang memadai agar kontras gerakan tangan dapat dianalisis dengan presisi."
+            title = "2. Adequate Ambient Lighting",
+            desc = "The camera requires reasonable ambient room light to accurately calculate motion contrast vectors."
         )
 
         GuideItemCard(
             icon = Icons.Default.Speed,
             iconTint = Color(0xFF10B981),
-            title = "3. Ayunan Tegas & Halus",
-            desc = "Lambaikan telapak tangan melintasi pandangan kamera dengan gerakan mantap dalam waktu sekitar setengah detik."
+            title = "3. Smooth & Steady Wave",
+            desc = "Wave your palm across the camera's field of view in a steady, deliberate motion taking about 0.3 to 0.5 seconds."
         )
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        // Section: Kasus Penggunaan
+        // Section: Practical Scenarios
         Text(
-            text = "Skenario Praktis & Keamanan",
+            text = "Practical Scenarios & Safety",
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Bold
         )
@@ -112,29 +112,29 @@ fun GuideScreen(modifier: Modifier = Modifier) {
         GuideItemCard(
             icon = Icons.Default.Headphones,
             iconTint = Color(0xFF8B5CF6),
-            title = "Saat Memasak atau Olahraga",
-            desc = "Tangan basah atau kotor? Cukup lambaikan tangan untuk ganti lagu di Spotify, YouTube, atur volume media, atau pause tanpa menyentuh HP."
+            title = "While Cooking or Working Out",
+            desc = "Wet or messy hands? Wave across to skip tracks on Spotify/YouTube, adjust volume, or pause playback without touching your device."
         )
 
         GuideItemCard(
             icon = Icons.Default.Security,
             iconTint = Color(0xFF10B981),
-            title = "Aman Mobile Banking & Android 15",
-            desc = "Aplikasi ini 100% bebas dari Layanan Aksesibilitas dan Setelan Terbatas, sehingga tidak akan memicu blokir keamanan di BCA, Mandiri, BRImo, atau peringatan Play Protect."
+            title = "Mobile Banking & Android 15 Compliant",
+            desc = "This application operates 100% free of Accessibility Services and Restricted Settings, ensuring zero interference with banking apps or Play Protect."
         )
 
         GuideItemCard(
             icon = Icons.Default.FlashlightOn,
             iconTint = Color(0xFFF59E0B),
-            title = "Lampu Senter Hands-Free",
-            desc = "Nyalakan atau matikan lampu senter dengan gerakan tangan saat tangan Anda sedang memegang barang atau sedang gelap."
+            title = "Hands-Free Flashlight",
+            desc = "Toggle the rear flashlight on or off with a wave when your hands are full or in the dark."
         )
 
         GuideItemCard(
             icon = Icons.Default.Lightbulb,
             iconTint = Color(0xFF06B6D4),
-            title = "Sensor Jarak Cepat (Proximity)",
-            desc = "Kibas tangan tepat di atas speaker atas layar HP untuk jeda lagu secara instan dengan konsumsi daya sangat rendah."
+            title = "Quick Proximity Wave",
+            desc = "Swipe directly across the top speaker sensor for instant play/pause control with minimal power draw."
         )
 
         Spacer(modifier = Modifier.height(24.dp))

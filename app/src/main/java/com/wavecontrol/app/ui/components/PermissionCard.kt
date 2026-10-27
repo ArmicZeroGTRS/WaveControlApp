@@ -1,7 +1,6 @@
 package com.wavecontrol.app.ui.components
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -60,7 +59,7 @@ fun PermissionCard(
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    text = "Izin Sistem & Keamanan Perangkat",
+                    text = "System Permissions & Device Safety",
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.SemiBold
                 )
@@ -86,13 +85,13 @@ fun PermissionCard(
                     Spacer(modifier = Modifier.width(10.dp))
                     Column {
                         Text(
-                            text = "100% Aman untuk Mobile Banking",
+                            text = "100% Mobile Banking Safe",
                             fontSize = 13.sp,
                             fontWeight = FontWeight.Bold,
                             color = Color(0xFF047857)
                         )
                         Text(
-                            text = "Aplikasi ini bebas dari Layanan Aksesibilitas & Setelan Terbatas. Aman digunakan bersama BCA, Mandiri, BRImo, Seabank, dll.",
+                            text = "Zero Accessibility Services or Restricted Settings. Fully compliant and safe alongside all banking apps.",
                             fontSize = 11.sp,
                             color = Color(0xFF065F46)
                         )
@@ -103,22 +102,22 @@ fun PermissionCard(
             Spacer(modifier = Modifier.height(12.dp))
 
             PermissionItem(
-                title = "Izin Kamera Depan",
-                subtitle = "Wajib untuk mendeteksi sapuan tangan tanpa menyentuh layar",
+                title = "Front Camera Permission",
+                subtitle = "Required to detect hand wave gestures hands-free",
                 icon = Icons.Default.CameraAlt,
                 isGranted = hasCameraPermission,
-                actionLabel = "Izinkan",
+                actionLabel = "Grant",
                 onAction = onRequestCamera
             )
 
             Spacer(modifier = Modifier.height(8.dp))
 
             PermissionItem(
-                title = "Izin Notifikasi",
-                subtitle = "Menjaga service tetap aktif di latar belakang (Foreground Service)",
+                title = "Notification Permission",
+                subtitle = "Maintains Foreground Service in the background",
                 icon = Icons.Default.Notifications,
                 isGranted = hasNotificationPermission,
-                actionLabel = "Izinkan",
+                actionLabel = "Grant",
                 onAction = onRequestNotification
             )
         }
@@ -192,7 +191,7 @@ private fun PermissionItem(
             ) {
                 Icon(
                     imageVector = Icons.Default.Check,
-                    contentDescription = "Diizinkan",
+                    contentDescription = "Granted",
                     tint = Color(0xFF10B981),
                     modifier = Modifier.size(16.dp)
                 )

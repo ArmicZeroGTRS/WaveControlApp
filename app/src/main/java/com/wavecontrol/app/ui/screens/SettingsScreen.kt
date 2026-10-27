@@ -49,7 +49,7 @@ fun SettingsScreen(
         ) {
             Column(modifier = Modifier.padding(18.dp)) {
                 Text(
-                    text = "Kalibrasi & Sensitivitas",
+                    text = "Calibration & Sensitivity",
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold
                 )
@@ -62,11 +62,11 @@ fun SettingsScreen(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(text = "Kepekaan Gerakan:", style = MaterialTheme.typography.bodyMedium)
+                    Text(text = "Motion Sensitivity:", style = MaterialTheme.typography.bodyMedium)
                     val label = when {
-                        settings.sensitivity < 0.35f -> "Rendah"
+                        settings.sensitivity < 0.35f -> "Low"
                         settings.sensitivity < 0.7f -> "Normal"
-                        else -> "Sangat Peka"
+                        else -> "Very Sensitive"
                     }
                     Text(
                         text = "$label (${(settings.sensitivity * 100).toInt()}%)",
@@ -94,9 +94,9 @@ fun SettingsScreen(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(text = "Jeda Antar Gerakan (Cooldown):", style = MaterialTheme.typography.bodyMedium)
+                    Text(text = "Cooldown Between Gestures:", style = MaterialTheme.typography.bodyMedium)
                     Text(
-                        text = "${String.format("%.1f", settings.cooldownMs / 1000f)} detik",
+                        text = "${String.format("%.1f", settings.cooldownMs / 1000f)} seconds",
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.primary,
                         fontSize = 13.sp
@@ -113,7 +113,7 @@ fun SettingsScreen(
                     colors = SliderDefaults.colors(thumbColor = MaterialTheme.colorScheme.primary)
                 )
                 Text(
-                    text = "Mencegah gerakan terpicu dua kali secara tidak sengaja.",
+                    text = "Prevents gestures from triggering twice accidentally.",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -131,7 +131,7 @@ fun SettingsScreen(
         ) {
             Column(modifier = Modifier.padding(18.dp)) {
                 Text(
-                    text = "Manajemen Daya & Ketahanan Baterai",
+                    text = "Power & Battery Management",
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold
                 )
@@ -139,15 +139,15 @@ fun SettingsScreen(
                 Spacer(modifier = Modifier.height(14.dp))
 
                 SettingSwitchRow(
-                    title = "Jeda Saat Layar Mati (Screen Off)",
-                    subtitle = "Otomatis matikan kamera dan sensor saat HP terkunci/layar mati untuk hemat baterai total",
+                    title = "Pause When Screen Off",
+                    subtitle = "Automatically pauses camera and sensors when phone screen turns off to save battery",
                     checked = settings.pauseOnScreenOff,
                     onCheckedChange = { onUpdateSettings { s -> s.copy(pauseOnScreenOff = it) } }
                 )
 
                 SettingSwitchRow(
-                    title = "Mode Hemat Daya",
-                    subtitle = "Mengoptimalkan proses frame di latar belakang",
+                    title = "Low Power Mode",
+                    subtitle = "Optimizes background frame sampling",
                     checked = settings.isLowPowerMode,
                     onCheckedChange = { onUpdateSettings { s -> s.copy(isLowPowerMode = it) } }
                 )
@@ -165,7 +165,7 @@ fun SettingsScreen(
         ) {
             Column(modifier = Modifier.padding(18.dp)) {
                 Text(
-                    text = "Preferensi Fitur & Sensor",
+                    text = "Feature & Sensor Preferences",
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold
                 )
@@ -173,36 +173,36 @@ fun SettingsScreen(
                 Spacer(modifier = Modifier.height(14.dp))
 
                 SettingSwitchRow(
-                    title = "Gunakan Kamera Depan",
-                    subtitle = "Mendeteksi sapuan tangan (Kiri, Kanan, Atas, Bawah)",
+                    title = "Use Front Camera",
+                    subtitle = "Detects hand waves (Left, Right, Up, Down)",
                     checked = settings.isCameraWaveEnabled,
                     onCheckedChange = { onUpdateSettings { s -> s.copy(isCameraWaveEnabled = it) } }
                 )
 
                 SettingSwitchRow(
-                    title = "Gunakan Sensor Jarak (Proximity)",
-                    subtitle = "Mendeteksi kibasan kilat di depan layar HP",
+                    title = "Use Proximity Sensor",
+                    subtitle = "Detects quick hovering near phone screen",
                     checked = settings.isProximityWaveEnabled,
                     onCheckedChange = { onUpdateSettings { s -> s.copy(isProximityWaveEnabled = it) } }
                 )
 
                 SettingSwitchRow(
-                    title = "Badge / HUD Mengambang (Pill Feedback)",
-                    subtitle = "Tampilkan indikator notifikasi gerakan hands-free",
+                    title = "Floating HUD Feedback",
+                    subtitle = "Displays floating visual feedback indicator",
                     checked = settings.isFloatingHudEnabled,
                     onCheckedChange = { onUpdateSettings { s -> s.copy(isFloatingHudEnabled = it) } }
                 )
 
                 SettingSwitchRow(
-                    title = "Getaran Haptic Feedback",
-                    subtitle = "Getar singkat saat gerakan tangan dikenali",
+                    title = "Haptic Feedback (Vibration)",
+                    subtitle = "Brief vibration when gesture is recognized",
                     checked = settings.isVibrationEnabled,
                     onCheckedChange = { onUpdateSettings { s -> s.copy(isVibrationEnabled = it) } }
                 )
 
                 SettingSwitchRow(
-                    title = "Suara Beep / Chime",
-                    subtitle = "Nada konfirmasi saat perintah dijalankan",
+                    title = "Sound Feedback (Chime)",
+                    subtitle = "Confirmation chime when command is executed",
                     checked = settings.isSoundFeedbackEnabled,
                     onCheckedChange = { onUpdateSettings { s -> s.copy(isSoundFeedbackEnabled = it) } }
                 )
@@ -220,7 +220,7 @@ fun SettingsScreen(
         ) {
             Column(modifier = Modifier.padding(18.dp)) {
                 Text(
-                    text = "Kalibrasi Sumbu Gerakan (Gesture Orientation)",
+                    text = "Gesture Orientation Calibration",
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold
                 )
@@ -228,22 +228,22 @@ fun SettingsScreen(
                 Spacer(modifier = Modifier.height(14.dp))
 
                 SettingSwitchRow(
-                    title = "Tukar Sumbu Gesture (X ↔ Y)",
-                    subtitle = "Aktifkan jika gerakan Horizontal (kiri-kanan) terdeteksi sebagai Vertikal (atas-bawah) atau sebaliknya",
+                    title = "Swap Gesture Axes (X ↔ Y)",
+                    subtitle = "Enable if horizontal movement is detected as vertical or vice versa",
                     checked = settings.swapAxes,
                     onCheckedChange = { onUpdateSettings { s -> s.copy(swapAxes = it) } }
                 )
 
                 SettingSwitchRow(
-                    title = "Balikkan Arah Horizontal",
-                    subtitle = "Tukar arah Kiri ⟷ Kanan jika orientasi sensor terbalik",
+                    title = "Invert Horizontal Direction",
+                    subtitle = "Swap Left ⟷ Right if sensor orientation is inverted",
                     checked = settings.invertHorizontal,
                     onCheckedChange = { onUpdateSettings { s -> s.copy(invertHorizontal = it) } }
                 )
 
                 SettingSwitchRow(
-                    title = "Balikkan Arah Vertikal",
-                    subtitle = "Tukar arah Atas ⟷ Bawah jika orientasi sensor terbalik",
+                    title = "Invert Vertical Direction",
+                    subtitle = "Swap Up ⟷ Down if sensor orientation is inverted",
                     checked = settings.invertVertical,
                     onCheckedChange = { onUpdateSettings { s -> s.copy(invertVertical = it) } }
                 )
